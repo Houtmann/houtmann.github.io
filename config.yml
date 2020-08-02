@@ -3,7 +3,7 @@ title: Hadrien Houtmann
 theme: ghost
 languageCode: fr
 copyright: Hadrien Houtmann
-disqusShortname: disqus_VuKObAc8wM
+disqusShortname: https-houtmann-github-io
 publishDir: "docs"
 markup:
   highlight:
@@ -43,7 +43,7 @@ params:
   stackoverflow: "https://stackoverflow.com/users/XXX/YYY"
   opengraph: true
   shareTwitter: true
-  shareLinkedIn: false
+  shareLinkedIn: true
   dateFormat: "Mon, Jan 2, 2006"
   exponeaJsUrl: ""
   exponeaTarget: ""
