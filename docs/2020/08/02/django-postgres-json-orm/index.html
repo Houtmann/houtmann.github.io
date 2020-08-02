@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>WIP Django / PostGreSQL, l&#39;ORM et le Json &middot; Hadrien Houtmann</title>
+        <meta name="description" content="Introduction Il faut dire que le JSON &#43; le relationnel c&rsquo;est bon !!!
+Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&hellip; Cela nous permet d&rsquo;allier le monde relationnel et le NoSQL(type documents)
+L&rsquo;exemple ci-dessous est tiré de la doc de django from django.">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="generator" content="Hugo 0.75.0-DEV" />
+        <meta name="robots" content="index,follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="WIP Django / PostGreSQL, l&#39;ORM et le Json">
+<meta property="og:description" content="Introduction Il faut dire que le JSON &#43; le relationnel c&rsquo;est bon !!!
+Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&hellip; Cela nous permet d&rsquo;allier le monde relationnel et le NoSQL(type documents)
+L&rsquo;exemple ci-dessous est tiré de la doc de django from django.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://houtmann.github.io/2020/08/02/django-postgres-json-orm/">
+        <link rel="stylesheet" href="https://houtmann.github.io/dist/site.css">
+        <link rel="stylesheet" href="https://houtmann.github.io/dist/syntax.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        
+        
+        
+    </head>
+    <body>
+        
+
+        <div id="wrapper">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-title-wrapper">
+                        
+                            <h1 class="site-title">
+                                <a title="Hadrien Houtmann" href="https://houtmann.github.io/">Hadrien Houtmann</a>
+                            </h1>
+                        
+                        <a class="button-square" href="https://houtmann.github.io/index.xml"><i class="fa fa-rss"></i></a>
+                        
+                        
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Github" title="Github" href="https://github.com/houtmann" rel="me">
+                                <i class="fa fa-github-alt"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Stack Overflow" title="Stack Overflow" href="https://stackoverflow.com/users/XXX/YYY" rel="me">
+                                <i class="fa fa-stack-overflow"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="LinkedIn" title="LinkedIn" href="https://www.linkedin.com/in/hadrien-houtmann-254742171/" rel="me">
+                                <i class="fa fa-linkedin"></i>
+                            </a>
+                        
+                        
+                    </div>
+
+                    <ul class="site-nav">
+                        
+    <li class="site-nav-item">
+        <a title="Blog" href="/">Blog</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="Projects" href="/project/">Projects</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="Contact" href="/page/contact/">Contact</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="About" href="/page/about/">About</a>
+    </li>
+
+                    </ul>
+                </div>
+            </header>
+
+            <div id="container">
+
+
+<div class="container">
+    <article class="post-container" itemscope="" itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">WIP Django / PostGreSQL, l&#39;ORM et le Json</h1>
+    
+    <p class="post-date">
+        <span>Published <time datetime="2020-08-02" itemprop="datePublished">Sun, Aug 2, 2020</time></span>
+        <span>by</span>
+        <span itemscope="" itemprop="author" itemtype="https://schema.org/Person">
+            <span itemprop="name">
+                <a href="https://www.linkedin.com/in/hadrien-houtmann-254742171/" itemprop="url" rel="author">Hadrien Houtmann</a>
+            </span>
+        </span>
+    </p>
+    
+        <p class="post-reading post-line">
+            <span>Temps de lecture estimé 4 min</span>
+        </p>
+    
+</header>
+
+        <div class="post-content clearfix" itemprop="articleBody">
+    
+
+    <h1 id="_introduction_"><em>Introduction</em></h1>
+<p>Il faut dire que le <strong>JSON</strong> + le <strong>relationnel</strong> c&rsquo;est bon !!!</p>
+<p>Nous au boulot on en met
+systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire,
+en général cela finit toujours par servir), le champs est appelé <code>data</code> ou <code>params</code>, un nom bien générique&hellip;
+Cela nous permet d&rsquo;allier le monde relationnel et le <em>NoSQL</em>(type documents)</p>
+<h6 id="lexemple-ci-dessous-est-tiré-de-la-doc-de-django">L&rsquo;exemple ci-dessous est tiré de la doc de django</h6>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-python" data-lang="python"><span style="color:#dc322f;font-weight:bold">from</span> <span style="color:#268bd2">django.contrib.postgres.fields</span> <span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">JSONField</span>
+ <span style="color:#dc322f;font-weight:bold">from</span> <span style="color:#268bd2">django.db</span> <span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">models</span>
+
+  <span style="color:#859900">class</span> <span style="color:#cb4b16">Dog</span>(<span style="color:#268bd2">models</span>.<span style="color:#268bd2">Model</span>):
+      <span style="color:#268bd2">name</span> = <span style="color:#268bd2">models</span>.<span style="color:#268bd2">CharField</span>(<span style="color:#268bd2">max_length</span>=<span style="color:#2aa198;font-weight:bold">200</span>)
+      <span style="color:#268bd2">data</span> = <span style="color:#268bd2">JSONField</span>()
+
+      <span style="color:#859900">def</span> <span style="color:#268bd2">__str__</span>(<span style="color:#268bd2">self</span>):
+          <span style="color:#859900">return</span> <span style="color:#268bd2">self</span>.<span style="color:#268bd2">name</span>
+</code></pre></div><p>Et voila maintenant on peut mettre du json avec n&rsquo;importe quel structure dans notre champs data.</p>
+<h3 id="problématique">Problématique</h3>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json">{
+    <span style="color:#268bd2;font-weight:bold">&#34;currency&#34;</span>: <span style="color:#2aa198">&#34;EUR&#34;</span>,
+    <span style="color:#268bd2;font-weight:bold">&#34;elements&#34;</span>: [
+        {
+            <span style="color:#268bd2;font-weight:bold">&#34;price_components&#34;</span>: [
+                {
+                    <span style="color:#268bd2;font-weight:bold">&#34;vat&#34;</span>: <span style="color:#2aa198;font-weight:bold">20</span>,
+                    <span style="color:#268bd2;font-weight:bold">&#34;type&#34;</span>: <span style="color:#2aa198">&#34;ENERGY&#34;</span>,
+                    <span style="color:#268bd2;font-weight:bold">&#34;price&#34;</span>: <span style="color:#2aa198">&#34;0.0000&#34;</span>,
+                    <span style="color:#268bd2;font-weight:bold">&#34;step_size&#34;</span>: <span style="color:#2aa198;font-weight:bold">1</span>
+                }
+            ]
+        }
+    ]
+}
+</code></pre></div><p>Concretement ce json represente en tarif d&rsquo;une recharge pour véhicule electrique.
+Avec du json on peut faire plein de tarif du coup (la seul limite est notre imagination).</p>
+<p>Dans l&rsquo;exemple ci-dessous notre tarif est composé de 2 <code>price_components</code> :</p>
+<ul>
+<li>un prix sur l&rsquo;energie avec un pas de 1</li>
+<li>un prix sur le temps de parking mais avec une restriction (cela signifie que le <code>price_component</code>
+ne s&rsquo;applique que si la durée de la recharge dépasse le min_duration)</li>
+</ul>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json">{
+   <span style="color:#268bd2;font-weight:bold">&#34;currency&#34;</span>:<span style="color:#2aa198">&#34;EUR&#34;</span>,
+   <span style="color:#268bd2;font-weight:bold">&#34;elements&#34;</span>:[
+      {
+         <span style="color:#268bd2;font-weight:bold">&#34;price_components&#34;</span>:[
+            {
+               <span style="color:#268bd2;font-weight:bold">&#34;vat&#34;</span>:<span style="color:#2aa198;font-weight:bold">20</span>,
+               <span style="color:#268bd2;font-weight:bold">&#34;type&#34;</span>:<span style="color:#2aa198">&#34;ENERGY&#34;</span>,
+               <span style="color:#268bd2;font-weight:bold">&#34;price&#34;</span>:<span style="color:#2aa198">&#34;0.0000&#34;</span>,
+               <span style="color:#268bd2;font-weight:bold">&#34;step_size&#34;</span>:<span style="color:#2aa198;font-weight:bold">1</span>
+            }
+         ]
+      },
+      {
+         <span style="color:#268bd2;font-weight:bold">&#34;restrictions&#34;</span>:{
+            <span style="color:#268bd2;font-weight:bold">&#34;min_duration&#34;</span>:<span style="color:#2aa198;font-weight:bold">3660</span>
+         },
+         <span style="color:#268bd2;font-weight:bold">&#34;price_components&#34;</span>:[
+            {
+               <span style="color:#268bd2;font-weight:bold">&#34;vat&#34;</span>:<span style="color:#2aa198;font-weight:bold">20</span>,
+               <span style="color:#268bd2;font-weight:bold">&#34;type&#34;</span>:<span style="color:#2aa198">&#34;PARKING_TIME&#34;</span>,
+               <span style="color:#268bd2;font-weight:bold">&#34;price&#34;</span>:<span style="color:#2aa198">&#34;0.0333&#34;</span>,
+               <span style="color:#268bd2;font-weight:bold">&#34;step_size&#34;</span>:<span style="color:#2aa198;font-weight:bold">60</span>
+            }
+         ]
+      }
+   ]
+}
+</code></pre></div><p>Un json simple et complexe en meme temps, ce n&rsquo;est pas nous qui l&rsquo;avons inventé mais fait partie d&rsquo;une norme&hellip;
+nous on est disciplinés donc on appliquent&hellip;même si je sent la difficulté qui arrive&hellip;</p>
+<p>Allez revenons à Django, maintenant que l&rsquo;on a un super json à requêter</p>
+<blockquote>
+<p>Toutes les recharges avec une restrictions et toute les recharges avec la restrictions <code>PARKING_TIME</code></p>
+</blockquote>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-python" data-lang="python"><span style="color:#268bd2">r</span> = <span style="color:#268bd2">Recharge</span>.<span style="color:#268bd2">objects</span>.<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">price_ocpi__elements__1__has_key</span>=<span style="color:#2aa198">&#34;restrictions&#34;</span>)
+
+<span style="color:#268bd2">r</span> = <span style="color:#268bd2">Recharge</span>.<span style="color:#268bd2">objects</span>.<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">price_ocpi__elements__1__price_components__0__type</span>=<span style="color:#2aa198">&#34;PARKING_TIME_ZW&#34;</span>)
+</code></pre></div><p>Ok cela fonctionne si on part du principe que les élements avec restrictions seront toujours à l&rsquo;index 1</p>
+<p>Bon ok mais, nous on veut un truc du genre avoir toutes les recharges gratuites ou payantes (quelque chose d&rsquo;utile en fait 😁 ).</p>
+<p>Cela se défini par l&rsquo;addition de tous les <strong><code>price_components</code></strong>,
+et si le résultat est égale à zero c&rsquo;est une recharge gratuite, et &gt; 0 c&rsquo;est une recharge considéré comme payante.</p>
+<p>Je part tête baisser,
+pour faire un <code>.annotate</code> avec la fonction <code>Sum</code> et le problème sera réglé affaire suivante. Malheuresement cela ne c&rsquo;est pas passé ainsi,
+à la lecture de la doc django, et même du code source, j&rsquo;ai compris que cela ne serais pas faisable avec l&rsquo;ORM. Les fonctions sur le Json sont assez limitées</p>
+<p>Nous avons deux solutions devant nous :</p>
+<ul>
+<li>soit en python à grand coup de map/filter mais dans ce cas il faut récuperer toutes les recharges (niveau optimisation et scalabilité on repassera)</li>
+<li>soit en SQL</li>
+</ul>
+<p>J&rsquo;ai choisis la solution SQL, car je ne suis pas fan de l&rsquo;écriture de map/filter en python, mais aussi car
+PostgreSQL possèdent un très bon support du JSONB avec beaucoup de fonction très pratique.</p>
+<hr>
+<p>Pour notre cas on va s&rsquo;interesser à <code>jsonb_array_elements</code> qui prend en parametres un array.</p>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-sql" data-lang="sql"><span style="color:#859900">SELECT</span> <span style="color:#268bd2">r</span>.<span style="color:#268bd2">id</span>, <span style="color:#268bd2">elements</span>
+<span style="color:#859900">FROM</span> <span style="color:#268bd2">recharge</span> <span style="color:#268bd2">r</span>
+<span style="color:#268bd2">jsonb_array_elements</span>(<span style="color:#268bd2">price_ocpi</span> -&gt; <span style="color:#2aa198">&#39;elements&#39;</span>) <span style="color:#268bd2">elements</span>
+<span style="color:#859900">where</span> <span style="color:#268bd2">r</span>.<span style="color:#268bd2">id</span> = <span style="color:#2aa198;font-weight:bold">10</span>
+</code></pre></div><p>Cette requête va nous retourner deux lignes (chaques objets de <code>elements</code>).</p>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json"><span style="color:#2aa198;font-weight:bold">10</span>,<span style="color:#2aa198">&#34;{&#34;&#34;price_components&#34;&#34;: [{&#34;&#34;vat&#34;&#34;: 20, &#34;&#34;type&#34;&#34;: &#34;&#34;ENERGY&#34;&#34;, &#34;&#34;price&#34;&#34;: &#34;&#34;0.0000&#34;&#34;, &#34;&#34;step_size&#34;&#34;: 1}]}&#34;</span>
+<span style="color:#2aa198;font-weight:bold">10</span>,<span style="color:#2aa198">&#34;{&#34;&#34;restrictions&#34;&#34;: {&#34;&#34;min_duration&#34;&#34;: 3660}, &#34;&#34;price_components&#34;&#34;: [{&#34;&#34;vat&#34;&#34;: 20, &#34;&#34;type&#34;&#34;: &#34;&#34;PARKING_TIME&#34;&#34;, &#34;&#34;price&#34;&#34;: &#34;&#34;0.0333&#34;&#34;, &#34;&#34;step_size&#34;&#34;: 60}]}&#34;</span>
+</code></pre></div><hr>
+<p>Il ne reste plus car faire la somme des <code>price</code> des <code>price_components</code></p>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-sql" data-lang="sql"><span style="color:#859900">SELECT</span> <span style="color:#268bd2">r</span>.<span style="color:#268bd2">id</span>, <span style="color:#859900">SUM</span>((<span style="color:#268bd2">elements</span> #&gt; <span style="color:#2aa198">&#39;{price_components, 0}&#39;</span> -&gt;&gt; <span style="color:#2aa198">&#39;price&#39;</span>)::<span style="color:#cb4b16">float</span>)
+<span style="color:#859900">FROM</span> <span style="color:#268bd2">recharge</span> <span style="color:#268bd2">r</span> , <span style="color:#268bd2">jsonb_array_elements</span>(<span style="color:#268bd2">price_ocpi</span> -&gt; <span style="color:#2aa198">&#39;elements&#39;</span>) <span style="color:#268bd2">elements</span>
+<span style="color:#859900">where</span> <span style="color:#268bd2">r</span>.<span style="color:#268bd2">id</span> = <span style="color:#2aa198;font-weight:bold">10</span>
+<span style="color:#859900">group</span> <span style="color:#859900">by</span> <span style="color:#268bd2">r</span>.<span style="color:#268bd2">id</span>
+<span style="color:#859900">having</span> <span style="color:#859900">SUM</span>((<span style="color:#268bd2">mes_prices</span> -&gt;&gt; <span style="color:#2aa198">&#39;price&#39;</span>)::<span style="color:#cb4b16">float</span>) &gt; <span style="color:#2aa198;font-weight:bold">0</span>.<span style="color:#2aa198;font-weight:bold">0</span>
+</code></pre></div><p>Maintenant lançons la reqûete depuis Django
+<code>dictfetchall</code> et <code>namedtuplefetchall</code> sont deux fonctions, qui permettent récuperer le résultat du curseur (<a href="https://docs.djangoproject.com/fr/3.0/topics/db/sql/#executing-custom-sql-directly">voir ici</a>)</p>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-python" data-lang="python"><span style="color:#dc322f;font-weight:bold">from</span> <span style="color:#268bd2">django.db</span> <span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">connection</span>
+
+<span style="color:#859900">def</span> <span style="color:#268bd2">dictfetchall</span>(<span style="color:#268bd2">cursor</span>):
+    <span style="color:#2aa198">&#34;Return all rows from a cursor as a dict&#34;</span>
+    <span style="color:#268bd2">columns</span> = [<span style="color:#268bd2">col</span>[<span style="color:#2aa198;font-weight:bold">0</span>] <span style="color:#859900">for</span> <span style="color:#268bd2">col</span> <span style="color:#859900">in</span> <span style="color:#268bd2">cursor</span>.<span style="color:#268bd2">description</span>]
+    <span style="color:#859900">return</span> [
+        <span style="color:#cb4b16">dict</span>(<span style="color:#cb4b16">zip</span>(<span style="color:#268bd2">columns</span>, <span style="color:#268bd2">row</span>))
+        <span style="color:#859900">for</span> <span style="color:#268bd2">row</span> <span style="color:#859900">in</span> <span style="color:#268bd2">cursor</span>.<span style="color:#268bd2">fetchall</span>()
+    ]
+
+
+<span style="color:#859900">def</span> <span style="color:#268bd2">namedtuplefetchall</span>(<span style="color:#268bd2">cursor</span>):
+    <span style="color:#2aa198">&#34;Return all rows from a cursor as a namedtuple&#34;</span>
+    <span style="color:#268bd2">desc</span> = <span style="color:#268bd2">cursor</span>.<span style="color:#268bd2">description</span>
+    <span style="color:#268bd2">nt_result</span> = <span style="color:#268bd2">namedtuple</span>(<span style="color:#2aa198">&#39;Recharge&#39;</span>, [<span style="color:#268bd2">col</span>[<span style="color:#2aa198;font-weight:bold">0</span>] <span style="color:#859900">for</span> <span style="color:#268bd2">col</span> <span style="color:#859900">in</span> <span style="color:#268bd2">desc</span>])
+    <span style="color:#859900">return</span> [<span style="color:#268bd2">nt_result</span>(*<span style="color:#268bd2">row</span>) <span style="color:#859900">for</span> <span style="color:#268bd2">row</span> <span style="color:#859900">in</span> <span style="color:#268bd2">cursor</span>.<span style="color:#268bd2">fetchall</span>()]
+
+<span style="color:#859900">with</span> <span style="color:#268bd2">connection</span>.<span style="color:#268bd2">cursor</span>() <span style="color:#859900">as</span> <span style="color:#268bd2">cursor</span>:
+    <span style="color:#268bd2">cursor</span>.<span style="color:#268bd2">execute</span>(<span style="color:#2aa198">&#34;&#34;&#34;
+</span><span style="color:#2aa198">                    SELECT r.id, SUM((elements #&gt; &#39;{price_components, 0}&#39; -&gt;&gt; &#39;price&#39;)::float)
+</span><span style="color:#2aa198">                    FROM recharge r , jsonb_array_elements(price_ocpi -&gt; &#39;elements&#39;) elements
+</span><span style="color:#2aa198">                    where r.id = 10
+</span><span style="color:#2aa198">                    group by r.id
+</span><span style="color:#2aa198">                    having SUM((mes_prices -&gt;&gt; &#39;price&#39;)::float) &gt; 0.0
+</span><span style="color:#2aa198">                    &#34;&#34;&#34;</span>)
+    <span style="color:#268bd2">resultat</span> = <span style="color:#268bd2">namedtuplefetchall</span>(<span style="color:#268bd2">cursor</span>)
+</code></pre></div><h1 id="conclusion">Conclusion</h1>
+<p>La gestion du json avec PostgreSQL et Django permet d&rsquo;avoir un schéma flexible et de mélanger le meilleurs des mondes.</p>
+<p>Cependant, si vous êtes réticents à l&rsquo;utilisation de SQL, il vous faudra faire attention à la structure de votre JSON, car pour le moment
+le requetage avec l&rsquo;ORM de Django est assez limité pour le moment (pour du <strong>JSON</strong>)</p>
+<pre><code></code></pre>
+</div>
+
+        <footer class="post-footer clearfix">
+    
+
+    <div class="share">
+        
+            <a class="icon-twitter" href="https://twitter.com/share?text=WIP%20Django%20%2f%20PostGreSQL%2c%20l%27ORM%20et%20le%20Json&url=https%3a%2f%2fhoutmann.github.io%2f2020%2f08%2f02%2fdjango-postgres-json-orm%2f"
+                onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <i class="fa fa-twitter"></i>
+                <span class="hidden">Twitter</span>
+            </a>
+        
+
+        
+            <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhoutmann.github.io%2f2020%2f08%2f02%2fdjango-postgres-json-orm%2f"
+                onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <i class="fa fa-facebook"></i>
+                <span class="hidden">Facebook</span>
+            </a>
+        
+
+        
+            <a class="icon-google-plus" href="https://plus.google.com/share?url=https%3a%2f%2fhoutmann.github.io%2f2020%2f08%2f02%2fdjango-postgres-json-orm%2f"
+              onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+              <i class="fa fa-google-plus"></i>
+                <span class="hidden">Google+</span>
+            </a>
+        
+        
+            <a class="icon-linkedin" href="https://www.linkedin.com/shareArticle?mini=true&title=WIP%20Django%20%2f%20PostGreSQL%2c%20l%27ORM%20et%20le%20Json&url=https%3a%2f%2fhoutmann.github.io%2f2020%2f08%2f02%2fdjango-postgres-json-orm%2f&summary="
+               onclick="window.open(this.href, 'linkedin-share', 'width=554,height=481');return false;">
+               <i class="fa fa-linkedin"></i>
+               <span class="hidden">LinkedIn</span>
+            </a>
+        
+    </div>
+</footer>
+
+        
+    <div class="comments">
+        <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-houtmann-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+
+    </article>
+</div>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="site-title-wrapper">
+                    <h1 class="site-title">
+                        <a title="Hadrien Houtmann" href="https://houtmann.github.io/">Hadrien Houtmann</a>
+                    </h1>
+                    <a class="button-square button-jump-top js-jump-top" href="#">
+                        <i class="fa fa-angle-up"></i>
+                    </a>
+                </div>
+
+                <p class="footer-copyright">
+                    <span>&copy; 2020 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                </p>
+                <p class="footer-copyright">
+                    <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
+                    <span>/ <a href="https://github.com/jbub/ghostwriter">Ported</a> to Hugo By <a href="https://github.com/jbub">jbub</a></span>
+                </p>
+            </div>
+        </footer>
+
+        <script src="https://houtmann.github.io/js/jquery-1.11.3.min.js"></script>
+        <script src="https://houtmann.github.io/js/jquery.fitvids.js"></script>
+        <script src="https://houtmann.github.io/js/scripts.js"></script>
+    </body>
+</html>
+

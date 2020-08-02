@@ -14,10 +14,10 @@
     
     <item>
       <title>WIP Django / PostGreSQL, l&#39;ORM et le Json</title>
-      <link>https://houtmann.github.io/2020/08/02/django-postgres-json/</link>
+      <link>https://houtmann.github.io/2020/08/02/django-postgres-json-orm/</link>
       <pubDate>Sun, 02 Aug 2020 10:45:33 +0200</pubDate>
       
-      <guid>https://houtmann.github.io/2020/08/02/django-postgres-json/</guid>
+      <guid>https://houtmann.github.io/2020/08/02/django-postgres-json-orm/</guid>
       <description>Introduction Il faut dire que le JSON + le relationnel c&amp;rsquo;est bon !!!
 Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&amp;hellip; Cela nous permet d&amp;rsquo;allier le monde relationnel et le NoSQL(type documents)
 L&amp;rsquo;exemple ci-dessous est tiré de la doc de django from django.</description>

@@ -5,6 +5,7 @@ languageCode: fr
 copyright: Hadrien Houtmann
 disqusShortname: https-houtmann-github-io
 publishDir: "docs"
+enableEmoji: true
 markup:
   highlight:
     codeFences: true

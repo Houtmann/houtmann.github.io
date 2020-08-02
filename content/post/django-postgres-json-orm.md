@@ -27,7 +27,7 @@ from django.contrib.postgres.fields import JSONField
 
 Et voila maintenant on peut mettre du json avec n'importe quel structure dans notre champs data.
 
-
+### Problématique
 ```json
 {
     "currency": "EUR",
@@ -47,7 +47,7 @@ Et voila maintenant on peut mettre du json avec n'importe quel structure dans no
 ```
 
 Concretement ce json represente en tarif d'une recharge pour véhicule electrique.
-Avec du json on peut faire plein de tarif du coup, la seul limite est notre imagination.
+Avec du json on peut faire plein de tarif du coup (la seul limite est notre imagination).
 
 Dans l'exemple ci-dessous notre tarif est composé de 2 `price_components` :
 - un prix sur l'energie avec un pas de 1
@@ -85,12 +85,12 @@ ne s'applique que si la durée de la recharge dépasse le min_duration)
 }
 ```
 
-Enfin bref un json simple et complexe en meme temps, ce n'est pas nous qui l'avons inventé mais fait partie d'une norme...
-nous on est disciplinés donc nous on appliquent...même si je sent la complexicité arrivé
+Un json simple et complexe en meme temps, ce n'est pas nous qui l'avons inventé mais fait partie d'une norme...
+nous on est disciplinés donc on appliquent...même si je sent la difficulté qui arrive...
 
 Allez revenons à Django, maintenant que l'on a un super json à requêter
 
-Toutes les recharges avec une restrictions et toute les recharges avec la restrictions `PARKING_TIME`
+>Toutes les recharges avec une restrictions et toute les recharges avec la restrictions `PARKING_TIME`
 ```python
 r = Recharge.objects.filter(price_ocpi__elements__1__has_key="restrictions")
 
@@ -98,7 +98,7 @@ r = Recharge.objects.filter(price_ocpi__elements__1__price_components__0__type="
 ```
 Ok cela fonctionne si on part du principe que les élements avec restrictions seront toujours à l'index 1
 
-Bon ok mais, nous on veut un truc du genre avoir toutes les recharges gratuites ou payantes.
+Bon ok mais, nous on veut un truc du genre avoir toutes les recharges gratuites ou payantes (quelque chose d'utile en fait :grin: ).
 
 Cela se défini par l'addition de tous les **`price_components`**,
 et si le résultat est égale à zero c'est une recharge gratuite, et > 0 c'est une recharge considéré comme payante.
@@ -139,45 +139,45 @@ group by r.id
 having SUM((mes_prices ->> 'price')::float) > 0.0
 ```
 
+Maintenant lançons la reqûete depuis Django 
+`dictfetchall` et `namedtuplefetchall` sont deux fonctions, qui permettent récuperer le résultat du curseur ([voir ici](https://docs.djangoproject.com/fr/3.0/topics/db/sql/#executing-custom-sql-directly))
+```python
+from django.db import connection
 
-Probléme résolut ! Bon on a déjà un json impossible à requeter en Django mais maintenant que l'on en est arrivé la autant s'amuser un peu...
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
 
----
-Imaginons que les mec de la norme pousse le vice (ou la con*****) un peu plus loin et decident que dans un `price_components` il y est plusieurs objets...
 
-```json
-{
-   "currency":"EUR",
-   "elements":[
-      {
-         "price_components":[
-            {
-               "vat":20,
-               "type":"ENERGY",
-               "price":"0.0000",
-               "step_size":1
-            }
-         ]
-      },
-      {
-         "restrictions":{
-            "min_duration":3660
-         },
-         "price_components":[
-            {
-               "vat":20,
-               "type":"PARKING_TIME",
-               "price":"0.0333",
-               "step_size":60
-            },
-            {
-               "vat":20,
-               "type":"TRUC",
-               "price":"10",
-               "step_size":1
-            }
-         ]
-      }
-   ]
-}
+def namedtuplefetchall(cursor):
+    "Return all rows from a cursor as a namedtuple"
+    desc = cursor.description
+    nt_result = namedtuple('Recharge', [col[0] for col in desc])
+    return [nt_result(*row) for row in cursor.fetchall()]
+
+with connection.cursor() as cursor:
+    cursor.execute("""
+                    SELECT r.id, SUM((elements #> '{price_components, 0}' ->> 'price')::float)
+                    FROM recharge r , jsonb_array_elements(price_ocpi -> 'elements') elements
+                    where r.id = 10
+                    group by r.id
+                    having SUM((mes_prices ->> 'price')::float) > 0.0
+                    """)
+    resultat = namedtuplefetchall(cursor)
+```
+
+
+
+
+# Conclusion
+
+La gestion du json avec PostgreSQL et Django permet d'avoir un schéma flexible et de mélanger le meilleurs des mondes.
+
+Cependant, si vous êtes réticents à l'utilisation de SQL, il vous faudra faire attention à la structure de votre JSON, car pour le moment
+le requetage avec l'ORM de Django est assez limité pour le moment (pour du **JSON**)
+
 ```
