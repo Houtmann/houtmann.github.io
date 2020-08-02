@@ -4,18 +4,16 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>WIP Django / PostGreSQL, l&#39;ORM et le Json &middot; Hadrien Houtmann</title>
-        <meta name="description" content="Introduction Il faut dire que le JSON &#43; le relationnel c&rsquo;est bon !!!
-Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&hellip; Cela nous permet d&rsquo;allier le monde relationnel et le NoSQL(type documents)
-L&rsquo;exemple ci-dessous est tiré de la doc de django from django.">
+        <meta name="description" content="Introduction Le JSON &#43; le relationnel c&rsquo;est completement pratique !
+Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&hellip; Cela nous permet d&rsquo;allier le monde relationnel et le NoSQL(type documents). Dans cet article, nous allons voir que Django permet de requêter les champs JSON, mais que celui-ci est vite limité.">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
         <meta name="generator" content="Hugo 0.75.0-DEV" />
         <meta name="robots" content="index,follow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta property="og:title" content="WIP Django / PostGreSQL, l&#39;ORM et le Json">
-<meta property="og:description" content="Introduction Il faut dire que le JSON &#43; le relationnel c&rsquo;est bon !!!
-Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&hellip; Cela nous permet d&rsquo;allier le monde relationnel et le NoSQL(type documents)
-L&rsquo;exemple ci-dessous est tiré de la doc de django from django.">
+<meta property="og:description" content="Introduction Le JSON &#43; le relationnel c&rsquo;est completement pratique !
+Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&hellip; Cela nous permet d&rsquo;allier le monde relationnel et le NoSQL(type documents). Dans cet article, nous allons voir que Django permet de requêter les champs JSON, mais que celui-ci est vite limité.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://houtmann.github.io/2020/08/02/django-postgres-json-orm/">
         <link rel="stylesheet" href="https://houtmann.github.io/dist/site.css">
@@ -72,10 +70,6 @@ L&rsquo;exemple ci-dessous est tiré de la doc de django from django.">
     </li>
 
     <li class="site-nav-item">
-        <a title="Contact" href="/page/contact/">Contact</a>
-    </li>
-
-    <li class="site-nav-item">
         <a title="About" href="/page/about/">About</a>
     </li>
 
@@ -111,22 +105,26 @@ L&rsquo;exemple ci-dessous est tiré de la doc de django from django.">
     
 
     <h1 id="_introduction_"><em>Introduction</em></h1>
-<p>Il faut dire que le <strong>JSON</strong> + le <strong>relationnel</strong> c&rsquo;est bon !!!</p>
+<p>Le <strong>JSON</strong> + le <strong>relationnel</strong> c&rsquo;est completement pratique !</p>
 <p>Nous au boulot on en met
 systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire,
 en général cela finit toujours par servir), le champs est appelé <code>data</code> ou <code>params</code>, un nom bien générique&hellip;
-Cela nous permet d&rsquo;allier le monde relationnel et le <em>NoSQL</em>(type documents)</p>
-<h6 id="lexemple-ci-dessous-est-tiré-de-la-doc-de-django">L&rsquo;exemple ci-dessous est tiré de la doc de django</h6>
+Cela nous permet d&rsquo;allier le monde relationnel et le <em>NoSQL</em>(type documents).
+Dans cet article, nous allons voir que Django permet de requêter les champs JSON, mais que celui-ci est vite limité.</p>
+<blockquote>
+<p>L&rsquo;exemple ci-dessous est tiré de la doc de django</p>
+</blockquote>
 <div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-python" data-lang="python"><span style="color:#dc322f;font-weight:bold">from</span> <span style="color:#268bd2">django.contrib.postgres.fields</span> <span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">JSONField</span>
  <span style="color:#dc322f;font-weight:bold">from</span> <span style="color:#268bd2">django.db</span> <span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">models</span>
 
   <span style="color:#859900">class</span> <span style="color:#cb4b16">Dog</span>(<span style="color:#268bd2">models</span>.<span style="color:#268bd2">Model</span>):
       <span style="color:#268bd2">name</span> = <span style="color:#268bd2">models</span>.<span style="color:#268bd2">CharField</span>(<span style="color:#268bd2">max_length</span>=<span style="color:#2aa198;font-weight:bold">200</span>)
       <span style="color:#268bd2">data</span> = <span style="color:#268bd2">JSONField</span>()
+      <span style="color:#268bd2">params</span> = <span style="color:#268bd2">JSONField</span>()
 
       <span style="color:#859900">def</span> <span style="color:#268bd2">__str__</span>(<span style="color:#268bd2">self</span>):
           <span style="color:#859900">return</span> <span style="color:#268bd2">self</span>.<span style="color:#268bd2">name</span>
-</code></pre></div><p>Et voila maintenant on peut mettre du json avec n&rsquo;importe quel structure dans notre champs data.</p>
+</code></pre></div><p>Et voila maintenant on peut mettre du json avec n&rsquo;importe quel structure dans notre champs data. En Python l&rsquo;intégration est transparent avec les dictionnaires.</p>
 <h3 id="problématique">Problématique</h3>
 <div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json">{
     <span style="color:#268bd2;font-weight:bold">&#34;currency&#34;</span>: <span style="color:#2aa198">&#34;EUR&#34;</span>,

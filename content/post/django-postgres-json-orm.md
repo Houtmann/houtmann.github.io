@@ -5,14 +5,15 @@ draft: false
 ---
 
 # _Introduction_
-Il faut dire que le **JSON** + le **relationnel** c'est bon !!!
+Le **JSON** + le **relationnel** c'est completement pratique !
 
 Nous au boulot on en met
 systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire,
 en général cela finit toujours par servir), le champs est appelé `data` ou `params`, un nom bien générique...
-Cela nous permet d'allier le monde relationnel et le _NoSQL_(type documents)
+Cela nous permet d'allier le monde relationnel et le _NoSQL_(type documents).
+Dans cet article, nous allons voir que Django permet de requêter les champs JSON, mais que celui-ci est vite limité.
 
-###### L'exemple ci-dessous est tiré de la doc de django
+>L'exemple ci-dessous est tiré de la doc de django
 ```python
 from django.contrib.postgres.fields import JSONField
  from django.db import models
@@ -20,12 +21,13 @@ from django.contrib.postgres.fields import JSONField
   class Dog(models.Model):
       name = models.CharField(max_length=200)
       data = JSONField()
+      params = JSONField()
 
       def __str__(self):
           return self.name
 ```
 
-Et voila maintenant on peut mettre du json avec n'importe quel structure dans notre champs data.
+Et voila maintenant on peut mettre du json avec n'importe quel structure dans notre champs data. En Python l'intégration est transparent avec les dictionnaires.
 
 ### Problématique
 ```json

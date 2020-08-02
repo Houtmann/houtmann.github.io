@@ -18,9 +18,8 @@
       <pubDate>Sun, 02 Aug 2020 10:45:33 +0200</pubDate>
       
       <guid>https://houtmann.github.io/2020/08/02/django-postgres-json-orm/</guid>
-      <description>Introduction Il faut dire que le JSON + le relationnel c&amp;rsquo;est bon !!!
-Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&amp;hellip; Cela nous permet d&amp;rsquo;allier le monde relationnel et le NoSQL(type documents)
-L&amp;rsquo;exemple ci-dessous est tiré de la doc de django from django.</description>
+      <description>Introduction Le JSON + le relationnel c&amp;rsquo;est completement pratique !
+Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&amp;hellip; Cela nous permet d&amp;rsquo;allier le monde relationnel et le NoSQL(type documents). Dans cet article, nous allons voir que Django permet de requêter les champs JSON, mais que celui-ci est vite limité.</description>
     </item>
     
     <item>

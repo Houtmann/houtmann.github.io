@@ -18,9 +18,18 @@
       <pubDate>Sun, 02 Aug 2020 10:45:33 +0200</pubDate>
       
       <guid>https://houtmann.github.io/2020/08/02/django-postgres-json-orm/</guid>
-      <description>Introduction Il faut dire que le JSON + le relationnel c&amp;rsquo;est bon !!!
-Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&amp;hellip; Cela nous permet d&amp;rsquo;allier le monde relationnel et le NoSQL(type documents)
-L&amp;rsquo;exemple ci-dessous est tiré de la doc de django from django.</description>
+      <description>Introduction Le JSON + le relationnel c&amp;rsquo;est completement pratique !
+Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&amp;hellip; Cela nous permet d&amp;rsquo;allier le monde relationnel et le NoSQL(type documents). Dans cet article, nous allons voir que Django permet de requêter les champs JSON, mais que celui-ci est vite limité.</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>https://houtmann.github.io/page/about/</link>
+      <pubDate>Sun, 02 Aug 2020 02:13:50 +0000</pubDate>
+      
+      <guid>https://houtmann.github.io/page/about/</guid>
+      <description>A propos Passionné depuis mon jeune âge par l&amp;rsquo;informatique, je suis quelqu&amp;rsquo;un d&amp;rsquo;autodidacte.
+Diplômes    Année Etablissement Diplome     2018 IUT Toulouse Paul Sabatier Licence Gestion et traitement des données Massives   2017 IUT Toulouse Paul Sabatier DUT Informatique (année spéciale - accelérée)   2010 Ecole nationnale d&amp;rsquo;Administration pénitentiaire Surveillant pénitentiaire    </description>
     </item>
     
     <item>
@@ -31,15 +40,6 @@ L&amp;rsquo;exemple ci-dessous est tiré de la doc de django from django.</descr
       <guid>https://houtmann.github.io/2020/08/01/django-sql-logger/</guid>
       <description>Introduction Je risque de mon repeter souvent sur ce blog, mais l&amp;rsquo;ORM de Django est très bien conçu. On peut l&amp;rsquo;utiliser sans comprendre les base de données et le SQL, cependant, il est peut être traitre par moment (justement lorsque l&amp;rsquo;on comprend pas trop ce qui se passe derrière). Je reviendrais dans mon blog avec plusieurs techniques d&amp;rsquo;optimisation (avec des cas concret ou non).
 En attendant, il peut être utile lorsque l&amp;rsquo;on developpe sur son poste de voir les requêtes sql qui sont générées.</description>
-    </item>
-    
-    <item>
-      <title>About</title>
-      <link>https://houtmann.github.io/page/about/</link>
-      <pubDate>Fri, 03 Apr 2015 02:13:50 +0000</pubDate>
-      
-      <guid>https://houtmann.github.io/page/about/</guid>
-      <description>About Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean nec dolor in magna lobortis egestas. Suspendisse eu erat tempor, tristique neque eu, convallis nulla. Curabitur vel bibendum lacus, at semper mauris. Suspendisse aliquet commodo ex, sed sagittis metus aliquam id. Maecenas feugiat rutrum lorem vel imperdiet. Nullam ornare lectus ut enim finibus, et porttitor mi tincidunt. Aenean lacinia, leo quis vehicula eleifend, quam libero sagittis erat, at euismod augue mauris et sapien.</description>
     </item>
     
     <item>
