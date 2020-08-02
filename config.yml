@@ -4,7 +4,6 @@ theme: ghost
 languageCode: fr
 copyright: Hadrien Houtmann
 disqusShortname: disqus_VuKObAc8wM
-googleAnalytics: XXX
 publishDir: "docs"
 markup:
   highlight:
@@ -20,7 +19,7 @@ markup:
 
 privacy:
   disqus:
-    disable: true
+    disable: false
   googleAnalytics:
     anonymizeIP: true
     respectDoNotTrack: true
@@ -34,8 +33,6 @@ taxonomies:
   tag: tags
 
 params:
-  mainSections:
-    - post
   intro: true
   headline: Developpeur Profesionnel et passioné
   description: Quelques articles de blog sur Python, Django, PostgreSQL, Golang
