@@ -3,7 +3,7 @@ title: Hadrien Houtmann
 theme: ghost
 languageCode: fr
 copyright: Hadrien Houtmann
-disqusShortname: XXX
+disqusShortname: disqus_VuKObAc8wM
 googleAnalytics: XXX
 publishDir: "docs"
 markup:
@@ -37,7 +37,7 @@ params:
   mainSections:
     - post
   intro: true
-  headline:
+  headline: Developpeur Profesionnel et passioné
   description: Quelques articles de blog sur Python, Django, PostgreSQL, Golang
   github: "https://github.com/houtmann"
   linkedin: "https://www.linkedin.com/in/hadrien-houtmann-254742171/"
