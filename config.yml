@@ -39,7 +39,7 @@ params:
   mainSections:
     - post
   intro: true
-  headline: Developpeur Professionnel et passioné
+  headline: Developpeur Professionnel et passionné
   description: Quelques articles sur Python, Django, PostgreSQL, Golang
   github: "https://github.com/houtmann"
   linkedin: "https://www.linkedin.com/in/hadrien-houtmann-254742171/"
