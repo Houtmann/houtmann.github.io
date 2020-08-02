@@ -34,7 +34,7 @@ taxonomies:
 
 params:
   mainSections:
-    - posts
+    - post
   intro: true
   headline: Developpeur Profesionnel et passioné
   description: Quelques articles de blog sur Python, Django, PostgreSQL, Golang
