@@ -4,3 +4,6 @@
 [submodule "themes/new"]
 	path = themes/new
 	url = https://github.com/jpescador/hugo-future-imperfect.git
+[submodule "src/themes/ghost"]
+	path = src/themes/ghost
+	url = https://github.com/jbub/ghostwriter.git

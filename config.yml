@@ -1,0 +1,77 @@
+baseurl: "https://example.com/"
+title: Hadrien Houtmann
+theme: ghost
+languageCode: fr
+copyright: Hadrien Houtmann
+disqusShortname: XXX
+googleAnalytics: XXX
+publishDir: "docs"
+markup:
+  highlight:
+    codeFences: true
+    guessSyntax: false
+    hl_Lines: ""
+    lineNoStart: 1
+    lineNos: false
+    lineNumbersInTable: true
+    noClasses: true
+    style: solarized-light
+    tabWidth: 2
+
+privacy:
+  disqus:
+    disable: true
+  googleAnalytics:
+    anonymizeIP: true
+    respectDoNotTrack: true
+    useSessionStorage: false
+
+author:
+  name: Hadrien Houtmann
+  profile: "https://www.linkedin.com/in/hadrien-houtmann-254742171/"
+
+taxonomies:
+  tag: tags
+
+params:
+  mainSections:
+    - post
+  intro: true
+  headline:
+  description: Quelques articles de blog sur Python, Django, PostgreSQL, Golang
+  github: "https://github.com/houtmann"
+  linkedin: "https://www.linkedin.com/in/hadrien-houtmann-254742171/"
+  stackoverflow: "https://stackoverflow.com/users/XXX/YYY"
+
+  opengraph: true
+  shareTwitter: true
+  shareLinkedIn: false
+  dateFormat: "Mon, Jan 2, 2006"
+  exponeaJsUrl: ""
+  exponeaTarget: ""
+  exponeaToken: ""
+  exponeaTrackVisits: false
+  readingTime: true
+  readingTimeText: "Temps de lecture estimé"
+  fathomUrl: ""
+  fathomSiteId: ""
+
+permalinks:
+  post: "/:year/:month/:day/:filename/"
+
+menu:
+  main:
+    - name: Blog
+      url: /
+      weight: 1
+    - name: Projects
+      url: /project/
+      weight: 2
+    - name: Contact
+      url: /page/contact/
+      weight: 3
+    - name: About
+      url: /page/about/
+      weight: 4
+
+
