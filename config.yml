@@ -33,6 +33,8 @@ taxonomies:
   tag: tags
 
 params:
+  mainSections:
+    - posts
   intro: true
   headline: Developpeur Profesionnel et passioné
   description: Quelques articles de blog sur Python, Django, PostgreSQL, Golang
