@@ -41,7 +41,6 @@ params:
   github: "https://github.com/houtmann"
   linkedin: "https://www.linkedin.com/in/hadrien-houtmann-254742171/"
   stackoverflow: "https://stackoverflow.com/users/XXX/YYY"
-
   opengraph: true
   shareTwitter: true
   shareLinkedIn: false
