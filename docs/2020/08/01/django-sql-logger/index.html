@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Logger les requêtes SQL sur son serveur Django (mode dev) &middot; Hadrien Houtmann</title>
+        <meta name="description" content="Introduction Je risque de mon repeter souvent sur ce blog, mais l&rsquo;ORM de Django est très bien conçu. On peut l&rsquo;utiliser sans comprendre les base de données et le SQL, cependant, il est peut être traitre par moment (justement lorsque l&rsquo;on comprend pas trop ce qui se passe derrière). Je reviendrais dans mon blog avec plusieurs techniques d&rsquo;optimisation (avec des cas concret ou non).
+En attendant, il peut être utile lorsque l&rsquo;on developpe sur son poste de voir les requêtes sql qui sont générées.">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="generator" content="Hugo 0.75.0-DEV" />
+        <meta name="robots" content="index,follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Logger les requêtes SQL sur son serveur Django (mode dev)">
+<meta property="og:description" content="Introduction Je risque de mon repeter souvent sur ce blog, mais l&rsquo;ORM de Django est très bien conçu. On peut l&rsquo;utiliser sans comprendre les base de données et le SQL, cependant, il est peut être traitre par moment (justement lorsque l&rsquo;on comprend pas trop ce qui se passe derrière). Je reviendrais dans mon blog avec plusieurs techniques d&rsquo;optimisation (avec des cas concret ou non).
+En attendant, il peut être utile lorsque l&rsquo;on developpe sur son poste de voir les requêtes sql qui sont générées.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://houtmann.github.io/2020/08/01/django-sql-logger/">
+        <link rel="stylesheet" href="https://houtmann.github.io/dist/site.css">
+        <link rel="stylesheet" href="https://houtmann.github.io/dist/syntax.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        
+        
+        
+    </head>
+    <body>
+        
+
+        <div id="wrapper">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-title-wrapper">
+                        
+                            <h1 class="site-title">
+                                <a title="Hadrien Houtmann" href="https://houtmann.github.io/">Hadrien Houtmann</a>
+                            </h1>
+                        
+                        <a class="button-square" href="https://houtmann.github.io/index.xml"><i class="fa fa-rss"></i></a>
+                        
+                        
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Github" title="Github" href="https://github.com/houtmann" rel="me">
+                                <i class="fa fa-github-alt"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Stack Overflow" title="Stack Overflow" href="https://stackoverflow.com/users/XXX/YYY" rel="me">
+                                <i class="fa fa-stack-overflow"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="LinkedIn" title="LinkedIn" href="https://www.linkedin.com/in/hadrien-houtmann-254742171/" rel="me">
+                                <i class="fa fa-linkedin"></i>
+                            </a>
+                        
+                        
+                    </div>
+
+                    <ul class="site-nav">
+                        
+    <li class="site-nav-item">
+        <a title="Blog" href="/">Blog</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="Projects" href="/project/">Projects</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="Contact" href="/page/contact/">Contact</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="About" href="/page/about/">About</a>
+    </li>
+
+                    </ul>
+                </div>
+            </header>
+
+            <div id="container">
+
+
+<div class="container">
+    <article class="post-container" itemscope="" itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Logger les requêtes SQL sur son serveur Django (mode dev)</h1>
+    
+    <p class="post-date">
+        <span>Published <time datetime="2020-08-01" itemprop="datePublished">Sat, Aug 1, 2020</time></span>
+        <span>by</span>
+        <span itemscope="" itemprop="author" itemtype="https://schema.org/Person">
+            <span itemprop="name">
+                <a href="https://www.linkedin.com/in/hadrien-houtmann-254742171/" itemprop="url" rel="author">Hadrien Houtmann</a>
+            </span>
+        </span>
+    </p>
+    
+        <p class="post-reading post-line">
+            <span>Temps de lecture estimé 2 min</span>
+        </p>
+    
+</header>
+
+        <div class="post-content clearfix" itemprop="articleBody">
+    
+
+    <h1 id="_introduction_"><em>Introduction</em></h1>
+<p>Je risque de mon repeter souvent sur ce blog, mais l&rsquo;ORM de Django est très bien conçu.
+On peut l&rsquo;utiliser sans comprendre les base de données et le SQL, cependant, il est peut être traitre par moment (justement lorsque l&rsquo;on comprend pas trop ce qui se passe derrière).
+Je reviendrais dans mon blog avec plusieurs techniques d&rsquo;optimisation (avec des cas concret ou non).</p>
+<p>En attendant, il peut être utile lorsque l&rsquo;on developpe sur son poste de voir les requêtes sql qui sont générées. Non pas pour les interpreter, mais pour voir, dans un premier temps le nombre de reqûetes qui sont générées</p>
+<h3 id="concretement">Concretement</h3>
+<blockquote>
+<p>à rajouter dans votre <code>settings.py</code></p>
+</blockquote>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-python" data-lang="python"><span style="color:#268bd2">LOGGING</span> = {
+    <span style="color:#2aa198">&#39;version&#39;</span>: <span style="color:#2aa198;font-weight:bold">1</span>,
+    <span style="color:#2aa198">&#39;filters&#39;</span>: {
+        <span style="color:#2aa198">&#39;require_debug_true&#39;</span>: {
+            <span style="color:#2aa198">&#39;()&#39;</span>: <span style="color:#2aa198">&#39;django.utils.log.RequireDebugTrue&#39;</span>,
+        }
+    },
+    <span style="color:#2aa198">&#39;handlers&#39;</span>: {
+        <span style="color:#2aa198">&#39;console&#39;</span>: {
+            <span style="color:#2aa198">&#39;level&#39;</span>: <span style="color:#2aa198">&#39;DEBUG&#39;</span>,
+            <span style="color:#2aa198">&#39;filters&#39;</span>: [<span style="color:#2aa198">&#39;require_debug_true&#39;</span>],
+            <span style="color:#2aa198">&#39;class&#39;</span>: <span style="color:#2aa198">&#39;logging.StreamHandler&#39;</span>,
+        }
+    },
+    <span style="color:#2aa198">&#39;loggers&#39;</span>: {
+        <span style="color:#2aa198">&#39;django.db.backends&#39;</span>: {
+            <span style="color:#2aa198">&#39;level&#39;</span>: <span style="color:#2aa198">&#39;DEBUG&#39;</span>,
+            <span style="color:#2aa198">&#39;handlers&#39;</span>: [<span style="color:#2aa198">&#39;console&#39;</span>],
+        }
+    }
+}
+</code></pre></div><blockquote>
+<p>Cela donne cela dans votre console de sortie.</p>
+</blockquote>
+<pre><code>
+DEBUG (0.002) SELECT &quot;django_session&quot;.&quot;session_key&quot;, &quot;django_session&quot;.&quot;session_data&quot;, &quot;django_session&quot;.&quot;expire_date&quot; FROM &quot;django_session&quot; WHERE (&quot;django_session&quot;.&quot;expire_date&quot; &gt; '2020-08-02T15:53:23.488356+00:00'::timestamptz AND &quot;django_session&quot;.&quot;session_key&quot; = '930xdns6qm56r79c1r7ee4b9z3dxk0lo'); args=(datetime.datetime(2020, 8, 2, 15, 53, 23, 488356, tzinfo=&lt;UTC&gt;), '930xdns6qm56r79c1r7ee4b9z3dxk0lo')
+DEBUG (0.001) SELECT &quot;auth_user&quot;.&quot;id&quot;, &quot;auth_user&quot;.&quot;password&quot;, &quot;auth_user&quot;.&quot;last_login&quot;, &quot;auth_user&quot;.&quot;is_superuser&quot;, &quot;auth_user&quot;.&quot;username&quot;, &quot;auth_user&quot;.&quot;first_name&quot;, &quot;auth_user&quot;.&quot;last_name&quot;, &quot;auth_user&quot;.&quot;email&quot;, &quot;auth_user&quot;.&quot;is_staff&quot;, &quot;auth_user&quot;.&quot;is_active&quot;, &quot;auth_user&quot;.&quot;date_joined&quot; FROM &quot;auth_user&quot; WHERE &quot;auth_user&quot;.&quot;id&quot; = 2; args=(2,)
+DEBUG (0.060) SELECT &quot;django_admin_log&quot;.&quot;id&quot;, &quot;django_admin_log&quot;.&quot;action_time&quot;, &quot;django_admin_log&quot;.&quot;user_id&quot;, &quot;django_admin_log&quot;.&quot;content_type_id&quot;, &quot;django_admin_log&quot;.&quot;object_id&quot;, &quot;django_admin_log&quot;.&quot;object_repr&quot;, &quot;django_admin_log&quot;.&quot;action_flag&quot;, &quot;django_admin_log&quot;.&quot;change_message&quot;, &quot;auth_user&quot;.&quot;id&quot;, &quot;auth_user&quot;.&quot;password&quot;, &quot;auth_user&quot;.&quot;last_login&quot;, &quot;auth_user&quot;.&quot;is_superuser&quot;, &quot;auth_user&quot;.&quot;username&quot;, &quot;auth_user&quot;.&quot;first_name&quot;, &quot;auth_user&quot;.&quot;last_name&quot;, &quot;auth_user&quot;.&quot;email&quot;, &quot;auth_user&quot;.&quot;is_staff&quot;, &quot;auth_user&quot;.&quot;is_active&quot;, &quot;auth_user&quot;.&quot;date_joined&quot;, &quot;django_content_type&quot;.&quot;id&quot;, &quot;django_content_type&quot;.&quot;app_label&quot;, &quot;django_content_type&quot;.&quot;model&quot; FROM &quot;django_admin_log&quot; INNER JOIN &quot;auth_user&quot; ON (&quot;django_admin_log&quot;.&quot;user_id&quot; = &quot;auth_user&quot;.&quot;id&quot;) LEFT OUTER JOIN &quot;django_content_type&quot; ON (&quot;django_admin_log&quot;.&quot;content_type_id&quot; = &quot;django_content_type&quot;.&quot;id&quot;) WHERE &quot;django_admin_log&quot;.&quot;user_id&quot; = 2 ORDER BY &quot;django_admin_log&quot;.&quot;action_time&quot; DESC  LIMIT 10; args=(2,)
+</code></pre><h1 id="conclusion">Conclusion</h1>
+<p>En naviguant sur votre site en local, ou en consommant vos point d&rsquo;api,vous serez peut être supris du nombre de requête genérer pour une seul vue.
+Cela peut vous servir d&rsquo;outils d&rsquo;optimisation, car il permet rapidemment, d&rsquo;identifier des parties de code qui pourrait être génératrice de nombreuses requête SQL</p>
+
+</div>
+
+        <footer class="post-footer clearfix">
+    
+
+    <div class="share">
+        
+            <a class="icon-twitter" href="https://twitter.com/share?text=Logger%20les%20requ%c3%aates%20SQL%20sur%20son%20serveur%20Django%20%28mode%20dev%29&url=https%3a%2f%2fhoutmann.github.io%2f2020%2f08%2f01%2fdjango-sql-logger%2f"
+                onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <i class="fa fa-twitter"></i>
+                <span class="hidden">Twitter</span>
+            </a>
+        
+
+        
+            <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhoutmann.github.io%2f2020%2f08%2f01%2fdjango-sql-logger%2f"
+                onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <i class="fa fa-facebook"></i>
+                <span class="hidden">Facebook</span>
+            </a>
+        
+
+        
+            <a class="icon-google-plus" href="https://plus.google.com/share?url=https%3a%2f%2fhoutmann.github.io%2f2020%2f08%2f01%2fdjango-sql-logger%2f"
+              onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+              <i class="fa fa-google-plus"></i>
+                <span class="hidden">Google+</span>
+            </a>
+        
+        
+            <a class="icon-linkedin" href="https://www.linkedin.com/shareArticle?mini=true&title=Logger%20les%20requ%c3%aates%20SQL%20sur%20son%20serveur%20Django%20%28mode%20dev%29&url=https%3a%2f%2fhoutmann.github.io%2f2020%2f08%2f01%2fdjango-sql-logger%2f&summary="
+               onclick="window.open(this.href, 'linkedin-share', 'width=554,height=481');return false;">
+               <i class="fa fa-linkedin"></i>
+               <span class="hidden">LinkedIn</span>
+            </a>
+        
+    </div>
+</footer>
+
+        
+    <div class="comments">
+        <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-houtmann-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+
+    </article>
+</div>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="site-title-wrapper">
+                    <h1 class="site-title">
+                        <a title="Hadrien Houtmann" href="https://houtmann.github.io/">Hadrien Houtmann</a>
+                    </h1>
+                    <a class="button-square button-jump-top js-jump-top" href="#">
+                        <i class="fa fa-angle-up"></i>
+                    </a>
+                </div>
+
+                <p class="footer-copyright">
+                    <span>&copy; 2020 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                </p>
+                <p class="footer-copyright">
+                    <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
+                    <span>/ <a href="https://github.com/jbub/ghostwriter">Ported</a> to Hugo By <a href="https://github.com/jbub">jbub</a></span>
+                </p>
+            </div>
+        </footer>
+
+        <script src="https://houtmann.github.io/js/jquery-1.11.3.min.js"></script>
+        <script src="https://houtmann.github.io/js/jquery.fitvids.js"></script>
+        <script src="https://houtmann.github.io/js/scripts.js"></script>
+    </body>
+</html>
+

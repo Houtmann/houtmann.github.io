@@ -6,6 +6,8 @@ copyright: Hadrien Houtmann
 disqusShortname: https-houtmann-github-io
 publishDir: "docs"
 enableEmoji: true
+staticDir:
+  - static
 markup:
   highlight:
     codeFences: true
