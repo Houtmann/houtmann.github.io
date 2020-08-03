@@ -8,6 +8,7 @@ publishDir: "docs"
 enableEmoji: true
 staticDir:
   - static
+
 markup:
   highlight:
     codeFences: true
@@ -72,4 +73,8 @@ menu:
       url: /page/about/
       weight: 3
 
-
+tags:
+  - Development
+  - Go
+  - fast
+  - Blogging

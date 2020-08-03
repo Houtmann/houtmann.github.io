@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on Hadrien Houtmann</title>
-    <link>https://houtmann.github.io/post/</link>
-    <description>Recent content in Posts on Hadrien Houtmann</description>
+    <title>theme on Hadrien Houtmann</title>
+    <link>https://houtmann.github.io/tags/theme/</link>
+    <description>Recent content in theme on Hadrien Houtmann</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>fr</language>
     <copyright>Hadrien Houtmann</copyright>
     <lastBuildDate>Sun, 02 Aug 2020 10:45:33 +0200</lastBuildDate>
     
-	<atom:link href="https://houtmann.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://houtmann.github.io/tags/theme/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -20,16 +20,6 @@
       <guid>https://houtmann.github.io/2020/08/02/django-postgres-json-orm/</guid>
       <description>Introduction Le JSON + le relationnel c&amp;rsquo;est carrement pratique !
 Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&amp;hellip; Cela nous permet d&amp;rsquo;allier le monde relationnel et le NoSQL(type documents). Dans cet article, nous allons voir rapidemment comment utiliser le json avec Django mais que celui-ci est vite limité.</description>
-    </item>
-    
-    <item>
-      <title>Logger les requêtes SQL sur son serveur Django (mode dev)</title>
-      <link>https://houtmann.github.io/2020/08/01/django-sql-logger/</link>
-      <pubDate>Sat, 01 Aug 2020 10:45:33 +0200</pubDate>
-      
-      <guid>https://houtmann.github.io/2020/08/01/django-sql-logger/</guid>
-      <description>Introduction Je risque de mon repeter souvent sur ce blog, mais l&amp;rsquo;ORM de Django est très bien conçu. On peut l&amp;rsquo;utiliser sans comprendre les base de données et le SQL, cependant, il est peut être traitre par moment (justement lorsque l&amp;rsquo;on comprend pas trop ce qui se passe derrière). Je reviendrais dans mon blog avec plusieurs techniques d&amp;rsquo;optimisation (avec des cas concret ou non).
-En attendant, il peut être utile lorsque l&amp;rsquo;on developpe sur son poste de voir les requêtes sql qui sont générées.</description>
     </item>
     
   </channel>

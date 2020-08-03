@@ -4,16 +4,16 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>WIP Django / PostGreSQL, l&#39;ORM et le Json &middot; Hadrien Houtmann</title>
-        <meta name="description" content="Introduction Le JSON &#43; le relationnel c&rsquo;est completement pratique !
-Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&hellip; Cela nous permet d&rsquo;allier le monde relationnel et le NoSQL(type documents). Dans cet article, nous allons voir que Django permet de requêter les champs JSON, mais que celui-ci est vite limité.">
+        <meta name="description" content="Introduction Le JSON &#43; le relationnel c&rsquo;est carrement pratique !
+Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&hellip; Cela nous permet d&rsquo;allier le monde relationnel et le NoSQL(type documents). Dans cet article, nous allons voir rapidemment comment utiliser le json avec Django mais que celui-ci est vite limité.">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
         <meta name="generator" content="Hugo 0.75.0-DEV" />
         <meta name="robots" content="index,follow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta property="og:title" content="WIP Django / PostGreSQL, l&#39;ORM et le Json">
-<meta property="og:description" content="Introduction Le JSON &#43; le relationnel c&rsquo;est completement pratique !
-Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&hellip; Cela nous permet d&rsquo;allier le monde relationnel et le NoSQL(type documents). Dans cet article, nous allons voir que Django permet de requêter les champs JSON, mais que celui-ci est vite limité.">
+<meta property="og:description" content="Introduction Le JSON &#43; le relationnel c&rsquo;est carrement pratique !
+Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&hellip; Cela nous permet d&rsquo;allier le monde relationnel et le NoSQL(type documents). Dans cet article, nous allons voir rapidemment comment utiliser le json avec Django mais que celui-ci est vite limité.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://houtmann.github.io/2020/08/02/django-postgres-json-orm/">
         <link rel="stylesheet" href="https://houtmann.github.io/dist/site.css">
@@ -96,7 +96,7 @@ Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sa
     </p>
     
         <p class="post-reading post-line">
-            <span>Temps de lecture estimé 4 min</span>
+            <span>Temps de lecture estimé 5 min</span>
         </p>
     
 </header>
@@ -105,12 +105,12 @@ Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sa
     
 
     <h1 id="_introduction_"><em>Introduction</em></h1>
-<p>Le <strong>JSON</strong> + le <strong>relationnel</strong> c&rsquo;est completement pratique !</p>
+<p>Le <strong>JSON</strong> + le <strong>relationnel</strong> c&rsquo;est carrement pratique !</p>
 <p>Nous au boulot on en met
 systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire,
 en général cela finit toujours par servir), le champs est appelé <code>data</code> ou <code>params</code>, un nom bien générique&hellip;
 Cela nous permet d&rsquo;allier le monde relationnel et le <em>NoSQL</em>(type documents).
-Dans cet article, nous allons voir que Django permet de requêter les champs JSON, mais que celui-ci est vite limité.</p>
+Dans cet article, nous allons voir rapidemment comment utiliser le json avec Django mais que celui-ci est vite limité.</p>
 <blockquote>
 <p>L&rsquo;exemple ci-dessous est tiré de la doc de django</p>
 </blockquote>
@@ -186,8 +186,8 @@ nous on est disciplinés donc on appliquent&hellip;même si je sent la difficult
 <div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-python" data-lang="python"><span style="color:#268bd2">r</span> = <span style="color:#268bd2">Recharge</span>.<span style="color:#268bd2">objects</span>.<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">price_ocpi__elements__1__has_key</span>=<span style="color:#2aa198">&#34;restrictions&#34;</span>)
 
 <span style="color:#268bd2">r</span> = <span style="color:#268bd2">Recharge</span>.<span style="color:#268bd2">objects</span>.<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">price_ocpi__elements__1__price_components__0__type</span>=<span style="color:#2aa198">&#34;PARKING_TIME_ZW&#34;</span>)
-</code></pre></div><p>Ok cela fonctionne si on part du principe que les élements avec restrictions seront toujours à l&rsquo;index 1</p>
-<p>Bon ok mais, nous on veut un truc du genre avoir toutes les recharges gratuites ou payantes (quelque chose d&rsquo;utile en fait 😁 ).</p>
+</code></pre></div><p>Cela fonctionne si l&rsquo;on part du principe que les élements avec restrictions seront toujours à l&rsquo;index 1</p>
+<p>Bon ok mais, nous on veut quelque chose d&rsquo;utile, comme par exemple avoir toutes les recharges gratuites ou payantes.</p>
 <p>Cela se défini par l&rsquo;addition de tous les <strong><code>price_components</code></strong>,
 et si le résultat est égale à zero c&rsquo;est une recharge gratuite, et &gt; 0 c&rsquo;est une recharge considéré comme payante.</p>
 <p>Je part tête baisser,
@@ -198,10 +198,10 @@ pour faire un <code>.annotate</code> avec la fonction <code>Sum</code> et le pro
 <li>soit en python à grand coup de map/filter mais dans ce cas il faut récuperer toutes les recharges (niveau optimisation et scalabilité on repassera)</li>
 <li>soit en SQL</li>
 </ul>
-<p>J&rsquo;ai choisis la solution SQL, car je ne suis pas fan de l&rsquo;écriture de map/filter en python, mais aussi car
-PostgreSQL possèdent un très bon support du JSONB avec beaucoup de fonction très pratique.</p>
+<p>J&rsquo;ai choisis la solution SQL, car je ne suis pas fan de l&rsquo;écriture et de la lecture de map/filter en python, mais aussi car
+<strong>PostgreSQL</strong> possèdent un très bon support du <strong>json</strong> avec beaucoup de fonction très pratique.</p>
 <hr>
-<p>Pour notre cas on va s&rsquo;interesser à <code>jsonb_array_elements</code> qui prend en parametres un array.</p>
+<p>Pour notre cas on va s&rsquo;interesser à <code>jsonb_array_elements</code>, une fonction Postgres qui permet de décomposer un tableau json.</p>
 <div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-sql" data-lang="sql"><span style="color:#859900">SELECT</span> <span style="color:#268bd2">r</span>.<span style="color:#268bd2">id</span>, <span style="color:#268bd2">elements</span>
 <span style="color:#859900">FROM</span> <span style="color:#268bd2">recharge</span> <span style="color:#268bd2">r</span>
 <span style="color:#268bd2">jsonb_array_elements</span>(<span style="color:#268bd2">price_ocpi</span> -&gt; <span style="color:#2aa198">&#39;elements&#39;</span>) <span style="color:#268bd2">elements</span>
@@ -215,8 +215,19 @@ PostgreSQL possèdent un très bon support du JSONB avec beaucoup de fonction tr
 <span style="color:#859900">FROM</span> <span style="color:#268bd2">recharge</span> <span style="color:#268bd2">r</span> , <span style="color:#268bd2">jsonb_array_elements</span>(<span style="color:#268bd2">price_ocpi</span> -&gt; <span style="color:#2aa198">&#39;elements&#39;</span>) <span style="color:#268bd2">elements</span>
 <span style="color:#859900">where</span> <span style="color:#268bd2">r</span>.<span style="color:#268bd2">id</span> = <span style="color:#2aa198;font-weight:bold">10</span>
 <span style="color:#859900">group</span> <span style="color:#859900">by</span> <span style="color:#268bd2">r</span>.<span style="color:#268bd2">id</span>
-<span style="color:#859900">having</span> <span style="color:#859900">SUM</span>((<span style="color:#268bd2">mes_prices</span> -&gt;&gt; <span style="color:#2aa198">&#39;price&#39;</span>)::<span style="color:#cb4b16">float</span>) &gt; <span style="color:#2aa198;font-weight:bold">0</span>.<span style="color:#2aa198;font-weight:bold">0</span>
-</code></pre></div><p>Maintenant lançons la reqûete depuis Django
+<span style="color:#859900">having</span> <span style="color:#859900">SUM</span>((<span style="color:#268bd2">elements</span> #&gt; <span style="color:#2aa198">&#39;{price_components, 0}&#39;</span> -&gt;&gt; <span style="color:#2aa198">&#39;price&#39;</span>)::<span style="color:#cb4b16">float</span>) &gt; <span style="color:#2aa198;font-weight:bold">0</span>.<span style="color:#2aa198;font-weight:bold">0</span>
+</code></pre></div><blockquote>
+<p>Noter qu&rsquo;avec <strong>PostgreSQL 12</strong>, il y a le nouveau langage pour parcourir du json
+Nous aurions pu écrire la requête comme ceçi :</p>
+</blockquote>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-sql" data-lang="sql"><span style="color:#859900">SELECT</span> <span style="color:#268bd2">r</span>.<span style="color:#268bd2">id</span>, <span style="color:#859900">SUM</span>(<span style="color:#268bd2">t</span>)
+<span style="color:#859900">FROM</span> <span style="color:#268bd2">recharge</span> <span style="color:#268bd2">r</span>, <span style="color:#268bd2">jsonb_path_query</span>(<span style="color:#268bd2">price_ocpi</span>, <span style="color:#2aa198">&#39;$.elements.price_components[*].price&#39;</span>) <span style="color:#268bd2">t</span>
+<span style="color:#859900">where</span> <span style="color:#268bd2">id</span> = <span style="color:#2aa198;font-weight:bold">10</span>
+<span style="color:#859900">group</span> <span style="color:#859900">by</span> <span style="color:#268bd2">r</span>.<span style="color:#268bd2">id</span>
+<span style="color:#859900">having</span> <span style="color:#859900">SUM</span>(<span style="color:#268bd2">t</span>) &gt; <span style="color:#2aa198;font-weight:bold">0</span>.<span style="color:#2aa198;font-weight:bold">0</span>
+
+</code></pre></div><h1 id="avec-django">Avec Django</h1>
+<p>Lançons la requête depuis le code python :
 <code>dictfetchall</code> et <code>namedtuplefetchall</code> sont deux fonctions, qui permettent récuperer le résultat du curseur (<a href="https://docs.djangoproject.com/fr/3.0/topics/db/sql/#executing-custom-sql-directly">voir ici</a>)</p>
 <div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-python" data-lang="python"><span style="color:#dc322f;font-weight:bold">from</span> <span style="color:#268bd2">django.db</span> <span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">connection</span>
 
@@ -248,10 +259,20 @@ PostgreSQL possèdent un très bon support du JSONB avec beaucoup de fonction tr
 <p>La gestion du json avec PostgreSQL et Django permet d&rsquo;avoir un schéma flexible et de mélanger le meilleurs des mondes.</p>
 <p>Cependant, si vous êtes réticents à l&rsquo;utilisation de SQL, il vous faudra faire attention à la structure de votre JSON, car pour le moment
 le requetage avec l&rsquo;ORM de Django est assez limité pour le moment (pour du <strong>JSON</strong>)</p>
-<pre><code></code></pre>
+
 </div>
 
         <footer class="post-footer clearfix">
+    
+        <p class="post-tags">
+            <span>Tagged:</span>
+            
+            
+                <a href="/tags/tutoriel/">tutoriel</a>, 
+            
+                <a href="/tags/theme/">theme</a>
+            
+        </p>
     
 
     <div class="share">

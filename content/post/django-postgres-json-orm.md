@@ -2,16 +2,17 @@
 title: "WIP Django / PostGreSQL, l'ORM et le Json"
 date: 2020-08-02T10:45:33+02:00
 draft: false
+tags: ["tutoriel", "theme"] 
 ---
 
 # _Introduction_
-Le **JSON** + le **relationnel** c'est completement pratique !
+Le **JSON** + le **relationnel** c'est carrement pratique !
 
 Nous au boulot on en met
 systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire,
 en général cela finit toujours par servir), le champs est appelé `data` ou `params`, un nom bien générique...
 Cela nous permet d'allier le monde relationnel et le _NoSQL_(type documents).
-Dans cet article, nous allons voir que Django permet de requêter les champs JSON, mais que celui-ci est vite limité.
+Dans cet article, nous allons voir rapidemment comment utiliser le json avec Django mais que celui-ci est vite limité.
 
 >L'exemple ci-dessous est tiré de la doc de django
 ```python
@@ -98,9 +99,9 @@ r = Recharge.objects.filter(price_ocpi__elements__1__has_key="restrictions")
 
 r = Recharge.objects.filter(price_ocpi__elements__1__price_components__0__type="PARKING_TIME_ZW")
 ```
-Ok cela fonctionne si on part du principe que les élements avec restrictions seront toujours à l'index 1
+Cela fonctionne si l'on part du principe que les élements avec restrictions seront toujours à l'index 1
 
-Bon ok mais, nous on veut un truc du genre avoir toutes les recharges gratuites ou payantes (quelque chose d'utile en fait :grin: ).
+Bon ok mais, nous on veut quelque chose d'utile, comme par exemple avoir toutes les recharges gratuites ou payantes.
 
 Cela se défini par l'addition de tous les **`price_components`**,
 et si le résultat est égale à zero c'est une recharge gratuite, et > 0 c'est une recharge considéré comme payante.
@@ -113,11 +114,11 @@ Nous avons deux solutions devant nous :
 - soit en python à grand coup de map/filter mais dans ce cas il faut récuperer toutes les recharges (niveau optimisation et scalabilité on repassera)
 - soit en SQL
 
-J'ai choisis la solution SQL, car je ne suis pas fan de l'écriture de map/filter en python, mais aussi car
-PostgreSQL possèdent un très bon support du JSONB avec beaucoup de fonction très pratique.
+J'ai choisis la solution SQL, car je ne suis pas fan de l'écriture et de la lecture de map/filter en python, mais aussi car
+**PostgreSQL** possèdent un très bon support du **json** avec beaucoup de fonction très pratique.
 
 ---
-Pour notre cas on va s'interesser à `jsonb_array_elements` qui prend en parametres un array.
+Pour notre cas on va s'interesser à `jsonb_array_elements`, une fonction Postgres qui permet de décomposer un tableau json.
 
 ```sql
 SELECT r.id, elements
@@ -138,10 +139,22 @@ SELECT r.id, SUM((elements #> '{price_components, 0}' ->> 'price')::float)
 FROM recharge r , jsonb_array_elements(price_ocpi -> 'elements') elements
 where r.id = 10
 group by r.id
-having SUM((mes_prices ->> 'price')::float) > 0.0
+having SUM((elements #> '{price_components, 0}' ->> 'price')::float) > 0.0
 ```
 
-Maintenant lançons la reqûete depuis Django 
+> Noter qu'avec **PostgreSQL 12**, il y a le nouveau langage pour parcourir du json
+Nous aurions pu écrire la requête comme ceçi :
+```sql
+SELECT r.id, SUM(t)
+FROM recharge r, jsonb_path_query(price_ocpi, '$.elements.price_components[*].price') t
+where id = 10
+group by r.id
+having SUM(t) > 0.0
+
+```
+
+# Avec Django
+Lançons la requête depuis le code python :
 `dictfetchall` et `namedtuplefetchall` sont deux fonctions, qui permettent récuperer le résultat du curseur ([voir ici](https://docs.djangoproject.com/fr/3.0/topics/db/sql/#executing-custom-sql-directly))
 ```python
 from django.db import connection
@@ -182,4 +195,3 @@ La gestion du json avec PostgreSQL et Django permet d'avoir un schéma flexible 
 Cependant, si vous êtes réticents à l'utilisation de SQL, il vous faudra faire attention à la structure de votre JSON, car pour le moment
 le requetage avec l'ORM de Django est assez limité pour le moment (pour du **JSON**)
 
-```
