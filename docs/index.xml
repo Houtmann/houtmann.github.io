@@ -28,8 +28,8 @@ Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sa
       <pubDate>Sun, 02 Aug 2020 02:13:50 +0000</pubDate>
       
       <guid>https://houtmann.github.io/page/about/</guid>
-      <description>A propos Passionné depuis mon jeune âge par l&amp;rsquo;informatique, je suis quelqu&amp;rsquo;un d&amp;rsquo;autodidacte.
-Diplômes    Année Etablissement Diplome     2018 IUT Toulouse Paul Sabatier Licence Gestion et traitement des données Massives   2017 IUT Toulouse Paul Sabatier DUT Informatique (année spéciale - accelérée)   2010 Ecole nationnale d&amp;rsquo;Administration pénitentiaire Surveillant pénitentiaire    </description>
+      <description>A propos Passionné depuis mon jeune âge par l&amp;rsquo;informatique, je suis quelqu&amp;rsquo;un d&amp;rsquo;autodidacte. Je travaille, personnellement et professionnellement avec :
+ Python (Django / Celery) Golang PostgreSQL Redis ReactJS VueJS  J&amp;rsquo;ai commencé par apprendre Python et par la suite l&amp;rsquo;excellent framework Django, avec lequel, j&amp;rsquo;adore travailler. Mais quand l&amp;rsquo;ORM de Django ne suffit plus à exprimer sa requeute, utiliser SQL et sombrer dans la doc Postgresql est un vrai plaisir que je ne me refuse pas.</description>
     </item>
     
     <item>
@@ -48,7 +48,7 @@ En attendant, il peut être utile lorsque l&amp;rsquo;on developpe sur son poste
       <pubDate>Fri, 03 Apr 2015 02:13:50 +0000</pubDate>
       
       <guid>https://houtmann.github.io/page/contact/</guid>
-      <description>Contact Aenean ipsum justo, semper eu nisl ut, pretium tincidunt sem. Praesent et diam sit amet lacus lobortis dictum a id lacus. Quisque hendrerit sit amet turpis eu varius. Ut id lorem ac felis ultrices tincidunt. Pellentesque consequat arcu ac fringilla imperdiet. Phasellus pellentesque, sapien non pulvinar blandit, sapien ante aliquet felis, vel porttitor sapien ante in lacus. Fusce non urna aliquet, malesuada nibh vel, luctus urna. Phasellus ut lacus molestie, varius purus quis, malesuada lorem.</description>
+      <description>Contact Pour me contacter, vous pouvez me retrouver sur LinkedIn</description>
     </item>
     
   </channel>
