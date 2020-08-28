@@ -9,7 +9,8 @@ Je risque de mon repeter souvent sur ce blog, mais l'ORM de Django est très bie
 On peut l'utiliser sans comprendre les base de données et le SQL, cependant, il est peut être traitre par moment (justement lorsque l'on comprend pas trop ce qui se passe derrière).
 Je reviendrais dans mon blog avec plusieurs techniques d'optimisation (avec des cas concret ou non).
 
-En attendant, il peut être utile lorsque l'on developpe sur son poste de voir les requêtes sql qui sont générées. Non pas pour les interpreter, mais pour voir, dans un premier temps le nombre de reqûetes qui sont générées
+En attendant, il peut être utile lorsque l'on developpe sur son poste de voir les requêtes sql qui sont générées. Non pas pour les interpreter, mais pour voir, 
+dans un premier temps le nombre de requêtes qui sont générées.
 
 
 ### Concretement
@@ -49,5 +50,5 @@ DEBUG (0.060) SELECT "django_admin_log"."id", "django_admin_log"."action_time", 
 
 # Conclusion
 
-En naviguant sur votre site en local, ou en consommant vos point d'api,vous serez peut être supris du nombre de requête genérer pour une seul vue.
-Cela peut vous servir d'outils d'optimisation, car il permet rapidemment, d'identifier des parties de code qui pourrait être génératrice de nombreuses requête SQL
+En naviguant sur votre site en local, ou en consommant vos point d'api,vous serez peut être supris du nombre de requête genérées pour une seul vue.
+Cela peut vous servir d'outils d'optimisation, car il permet rapidemment, d'identifier des parties de code qui pourrait être génératrice de nombreuses requête SQL.

@@ -193,5 +193,5 @@ with connection.cursor() as cursor:
 La gestion du json avec PostgreSQL et Django permet d'avoir un schéma flexible et de mélanger le meilleurs des mondes.
 
 Cependant, si vous êtes réticents à l'utilisation de SQL, il vous faudra faire attention à la structure de votre JSON, car pour le moment
-le requetage avec l'ORM de Django est assez limité pour le moment (pour du **JSON**)
+le requêtage avec l'ORM de Django est assez limité (pour le moment, je l'espère) (pour du **JSON**)
 
