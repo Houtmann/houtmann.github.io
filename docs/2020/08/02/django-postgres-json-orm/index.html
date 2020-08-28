@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>WIP Django / PostGreSQL, l&#39;ORM et le Json &middot; Hadrien Houtmann</title>
         <meta name="description" content="Introduction Le JSON &#43; le relationnel c&rsquo;est carrement pratique !
-Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&hellip; Cela nous permet d&rsquo;allier le monde relationnel et le NoSQL(type documents). Dans cet article, nous allons voir rapidemment comment utiliser le json avec Django mais que celui-ci est vite limité.">
+Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&hellip; Cela nous permet d&rsquo;allier le monde relationnel et le NoSQL(type documents). Dans cet article, nous allons voir rapidemment comment utiliser le json avec Django.">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
         <meta name="generator" content="Hugo 0.75.0-DEV" />
@@ -13,7 +13,7 @@ Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sa
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta property="og:title" content="WIP Django / PostGreSQL, l&#39;ORM et le Json">
 <meta property="og:description" content="Introduction Le JSON &#43; le relationnel c&rsquo;est carrement pratique !
-Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&hellip; Cela nous permet d&rsquo;allier le monde relationnel et le NoSQL(type documents). Dans cet article, nous allons voir rapidemment comment utiliser le json avec Django mais que celui-ci est vite limité.">
+Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire, en général cela finit toujours par servir), le champs est appelé data ou params, un nom bien générique&hellip; Cela nous permet d&rsquo;allier le monde relationnel et le NoSQL(type documents). Dans cet article, nous allons voir rapidemment comment utiliser le json avec Django.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://houtmann.github.io/2020/08/02/django-postgres-json-orm/">
         <link rel="stylesheet" href="https://houtmann.github.io/dist/site.css">
@@ -110,7 +110,8 @@ Nous au boulot on en met systématiquement dans chaque modèle (meme si on ne sa
 systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire,
 en général cela finit toujours par servir), le champs est appelé <code>data</code> ou <code>params</code>, un nom bien générique&hellip;
 Cela nous permet d&rsquo;allier le monde relationnel et le <em>NoSQL</em>(type documents).
-Dans cet article, nous allons voir rapidemment comment utiliser le json avec Django mais que celui-ci est vite limité.</p>
+Dans cet article, nous allons voir rapidemment comment utiliser le json avec Django. Nous verrons que Django possède quelques limites pour la manipulation
+du JSON.</p>
 <blockquote>
 <p>L&rsquo;exemple ci-dessous est tiré de la doc de django</p>
 </blockquote>

@@ -12,7 +12,8 @@ Nous au boulot on en met
 systématiquement dans chaque modèle (meme si on ne sait pas encore quoi en faire,
 en général cela finit toujours par servir), le champs est appelé `data` ou `params`, un nom bien générique...
 Cela nous permet d'allier le monde relationnel et le _NoSQL_(type documents).
-Dans cet article, nous allons voir rapidemment comment utiliser le json avec Django mais que celui-ci est vite limité.
+Dans cet article, nous allons voir rapidemment comment utiliser le json avec Django. Nous verrons que Django possède quelques limites pour la manipulation
+du JSON.
 
 >L'exemple ci-dessous est tiré de la doc de django
 ```python
