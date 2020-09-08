@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>WIP Django prefetch_related et Prefetch &middot; Hadrien Houtmann</title>
+        <meta name="description" content="Introduction Dans cet article nous allons voir l&rsquo;utilisation de la fonction prefetch_related, et de l&rsquo;objet Prefetch. Comme spécifié dans la doc, cette fonction permet d&rsquo;eviter un déluge de requête sur la base de donnée, bien utilisée elle permet des optimisations importantes, mais il faudra faire attention à certains points, pour eviter d&rsquo;être surpris par son fonctionnement.
+#Exemple Pour illustrer cela, on va reprendre l&rsquo;exemple de la documentation :
+from django.db import models class Ingredient(models.">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="generator" content="Hugo 0.74.3" />
+        <meta name="robots" content="index,follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="WIP Django prefetch_related et Prefetch">
+<meta property="og:description" content="Introduction Dans cet article nous allons voir l&rsquo;utilisation de la fonction prefetch_related, et de l&rsquo;objet Prefetch. Comme spécifié dans la doc, cette fonction permet d&rsquo;eviter un déluge de requête sur la base de donnée, bien utilisée elle permet des optimisations importantes, mais il faudra faire attention à certains points, pour eviter d&rsquo;être surpris par son fonctionnement.
+#Exemple Pour illustrer cela, on va reprendre l&rsquo;exemple de la documentation :
+from django.db import models class Ingredient(models.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://houtmann.github.io/2020/07/09/django-prefetch-related-et-prefetch/">
+        <link rel="stylesheet" href="https://houtmann.github.io/dist/site.css">
+        <link rel="stylesheet" href="https://houtmann.github.io/dist/syntax.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        
+        
+        
+    </head>
+    <body>
+        
+
+        <div id="wrapper">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-title-wrapper">
+                        
+                            <h1 class="site-title">
+                                <a title="Hadrien Houtmann" href="https://houtmann.github.io/">Hadrien Houtmann</a>
+                            </h1>
+                        
+                        <a class="button-square" href="https://houtmann.github.io/index.xml"><i class="fa fa-rss"></i></a>
+                        
+                        
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Github" title="Github" href="https://github.com/houtmann" rel="me">
+                                <i class="fa fa-github-alt"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Stack Overflow" title="Stack Overflow" href="https://stackoverflow.com/users/XXX/YYY" rel="me">
+                                <i class="fa fa-stack-overflow"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="LinkedIn" title="LinkedIn" href="https://www.linkedin.com/in/hadrien-houtmann-254742171/" rel="me">
+                                <i class="fa fa-linkedin"></i>
+                            </a>
+                        
+                        
+                    </div>
+
+                    <ul class="site-nav">
+                        
+    <li class="site-nav-item">
+        <a title="Blog" href="/">Blog</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="Projects" href="/project/">Projects</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a title="About" href="/page/about/">About</a>
+    </li>
+
+                    </ul>
+                </div>
+            </header>
+
+            <div id="container">
+
+
+<div class="container">
+    <article class="post-container" itemscope="" itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">WIP Django prefetch_related et Prefetch</h1>
+    
+    <p class="post-date">
+        <span>Published <time datetime="2020-07-09" itemprop="datePublished">Thu, Jul 9, 2020</time></span>
+        <span>by</span>
+        <span itemscope="" itemprop="author" itemtype="https://schema.org/Person">
+            <span itemprop="name">
+                <a href="https://www.linkedin.com/in/hadrien-houtmann-254742171/" itemprop="url" rel="author">Hadrien Houtmann</a>
+            </span>
+        </span>
+    </p>
+    
+        <p class="post-reading post-line">
+            <span>Temps de lecture estimé 3 min</span>
+        </p>
+    
+</header>
+
+        <div class="post-content clearfix" itemprop="articleBody">
+    
+
+    <h1 id="_introduction_"><em>Introduction</em></h1>
+<p>Dans cet article nous allons voir l&rsquo;utilisation de la fonction <code>prefetch_related</code>, et de l&rsquo;objet <code>Prefetch</code>. Comme spécifié dans la <a href="https://docs.djangoproject.com/fr/3.0/ref/models/querysets/#prefetch-related">doc</a>, cette fonction
+permet d&rsquo;eviter un déluge de requête sur la base de donnée, bien utilisée elle permet des optimisations importantes, mais il faudra faire attention à certains
+points, pour eviter d&rsquo;être surpris par son fonctionnement.</p>
+<p>#<em>Exemple</em>
+Pour illustrer cela, on va reprendre l&rsquo;exemple de la documentation :</p>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-python" data-lang="python"><span style="color:#dc322f;font-weight:bold">from</span> <span style="color:#268bd2">django.db</span> <span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">models</span>
+
+<span style="color:#859900">class</span> <span style="color:#cb4b16">Ingredient</span>(<span style="color:#268bd2">models</span>.<span style="color:#268bd2">Model</span>):
+    <span style="color:#268bd2">nom</span> = <span style="color:#268bd2">models</span>.<span style="color:#268bd2">CharField</span>(<span style="color:#268bd2">max_length</span>=<span style="color:#2aa198;font-weight:bold">30</span>)
+    <span style="color:#268bd2">poids</span> = <span style="color:#268bd2">models</span>.<span style="color:#268bd2">FloatField</span>()
+    <span style="color:#268bd2">en_stock</span> = <span style="color:#268bd2">models</span>.<span style="color:#268bd2">BooleanField</span>()
+
+    <span style="color:#859900">def</span> <span style="color:#268bd2">__str__</span>(<span style="color:#268bd2">self</span>):
+        <span style="color:#859900">return</span> <span style="color:#268bd2">self</span>.<span style="color:#268bd2">nom</span>
+
+<span style="color:#859900">class</span> <span style="color:#cb4b16">Pizza</span>(<span style="color:#268bd2">models</span>.<span style="color:#268bd2">Model</span>):
+    <span style="color:#268bd2">nom</span> = <span style="color:#268bd2">models</span>.<span style="color:#268bd2">CharField</span>(<span style="color:#268bd2">max_length</span>=<span style="color:#2aa198;font-weight:bold">50</span>)
+    <span style="color:#268bd2">ingredients</span> = <span style="color:#268bd2">models</span>.<span style="color:#268bd2">ManyToManyField</span>(<span style="color:#268bd2">Ingredient</span>)
+
+    <span style="color:#859900">def</span> <span style="color:#268bd2">__str__</span>(<span style="color:#268bd2">self</span>):
+        <span style="color:#859900">return</span> <span style="color:#268bd2">self</span>.<span style="color:#268bd2">nom</span>
+
+    
+</code></pre></div><p>Donc on va chercher tous nos ingredients, et on affiche les pizzas rattaché à l&rsquo;ingredient :</p>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-python" data-lang="python"><span style="color:#268bd2">ingredients</span> = <span style="color:#268bd2">Ingredient</span>.<span style="color:#268bd2">objects</span>.<span style="color:#268bd2">all</span>()
+<span style="color:#859900">for</span> <span style="color:#268bd2">ingredient</span> <span style="color:#859900">in</span> <span style="color:#268bd2">ingredients</span>:
+     <span style="color:#859900">print</span>(<span style="color:#268bd2">ingredient</span>.<span style="color:#268bd2">pizza_set</span>.<span style="color:#268bd2">all</span>()
+</code></pre></div><p>Voici les reqûetes SQL générées, ainsi que le print des pizzas. On peut voir que le code n&rsquo;est pas optimisé</p>
+<pre><code>(0.004) SELECT &quot;tuto_pizza&quot;.&quot;id&quot;, &quot;tuto_pizza&quot;.&quot;nom&quot; FROM &quot;tuto_pizza&quot; INNER JOIN &quot;tuto_pizza_ingredients&quot; ON (&quot;tuto_pizza&quot;.&quot;id&quot; = &quot;tuto_pizza_ingredients&quot;.&quot;pizza_id&quot;) WHERE &quot;tuto_pizza_ingredients&quot;.&quot;ingredient_id&quot; = 1 LIMIT 21; args=(1,)
+&lt;QuerySet [&lt;Pizza: Régina&gt;, &lt;Pizza: Royale&gt;]&gt;
+(0.001) SELECT &quot;tuto_pizza&quot;.&quot;id&quot;, &quot;tuto_pizza&quot;.&quot;nom&quot; FROM &quot;tuto_pizza&quot; INNER JOIN &quot;tuto_pizza_ingredients&quot; ON (&quot;tuto_pizza&quot;.&quot;id&quot; = &quot;tuto_pizza_ingredients&quot;.&quot;pizza_id&quot;) WHERE &quot;tuto_pizza_ingredients&quot;.&quot;ingredient_id&quot; = 2 LIMIT 21; args=(2,)
+&lt;QuerySet [&lt;Pizza: Régina&gt;, &lt;Pizza: Royale&gt;]&gt;
+(0.001) SELECT &quot;tuto_pizza&quot;.&quot;id&quot;, &quot;tuto_pizza&quot;.&quot;nom&quot; FROM &quot;tuto_pizza&quot; INNER JOIN &quot;tuto_pizza_ingredients&quot; ON (&quot;tuto_pizza&quot;.&quot;id&quot; = &quot;tuto_pizza_ingredients&quot;.&quot;pizza_id&quot;) WHERE &quot;tuto_pizza_ingredients&quot;.&quot;ingredient_id&quot; = 3 LIMIT 21; args=(3,)
+&lt;QuerySet [&lt;Pizza: Régina&gt;, &lt;Pizza: Royale&gt;]&gt;
+(0.001) SELECT &quot;tuto_pizza&quot;.&quot;id&quot;, &quot;tuto_pizza&quot;.&quot;nom&quot; FROM &quot;tuto_pizza&quot; INNER JOIN &quot;tuto_pizza_ingredients&quot; ON (&quot;tuto_pizza&quot;.&quot;id&quot; = &quot;tuto_pizza_ingredients&quot;.&quot;pizza_id&quot;) WHERE &quot;tuto_pizza_ingredients&quot;.&quot;ingredient_id&quot; = 4 LIMIT 21; args=(4,)
+&lt;QuerySet [&lt;Pizza: Régina&gt;, &lt;Pizza: Royale&gt;, &lt;Pizza: Chorizo&gt;]&gt;
+(0.001) SELECT &quot;tuto_pizza&quot;.&quot;id&quot;, &quot;tuto_pizza&quot;.&quot;nom&quot; FROM &quot;tuto_pizza&quot; INNER JOIN &quot;tuto_pizza_ingredients&quot; ON (&quot;tuto_pizza&quot;.&quot;id&quot; = &quot;tuto_pizza_ingredients&quot;.&quot;pizza_id&quot;) WHERE &quot;tuto_pizza_ingredients&quot;.&quot;ingredient_id&quot; = 5 LIMIT 21; args=(5,)
+&lt;QuerySet [&lt;Pizza: Royale&gt;]&gt;
+(0.001) SELECT &quot;tuto_pizza&quot;.&quot;id&quot;, &quot;tuto_pizza&quot;.&quot;nom&quot; FROM &quot;tuto_pizza&quot; INNER JOIN &quot;tuto_pizza_ingredients&quot; ON (&quot;tuto_pizza&quot;.&quot;id&quot; = &quot;tuto_pizza_ingredients&quot;.&quot;pizza_id&quot;) WHERE &quot;tuto_pizza_ingredients&quot;.&quot;ingredient_id&quot; = 6 LIMIT 21; args=(6,)
+&lt;QuerySet [&lt;Pizza: Royale&gt;]&gt;
+(0.001) SELECT &quot;tuto_pizza&quot;.&quot;id&quot;, &quot;tuto_pizza&quot;.&quot;nom&quot; FROM &quot;tuto_pizza&quot; INNER JOIN &quot;tuto_pizza_ingredients&quot; ON (&quot;tuto_pizza&quot;.&quot;id&quot; = &quot;tuto_pizza_ingredients&quot;.&quot;pizza_id&quot;) WHERE &quot;tuto_pizza_ingredients&quot;.&quot;ingredient_id&quot; = 7 LIMIT 21; args=(7,)
+&lt;QuerySet [&lt;Pizza: Chorizo&gt;]&gt;
+(0.001) SELECT &quot;tuto_pizza&quot;.&quot;id&quot;, &quot;tuto_pizza&quot;.&quot;nom&quot; FROM &quot;tuto_pizza&quot; INNER JOIN &quot;tuto_pizza_ingredients&quot; ON (&quot;tuto_pizza&quot;.&quot;id&quot; = &quot;tuto_pizza_ingredients&quot;.&quot;pizza_id&quot;) WHERE &quot;tuto_pizza_ingredients&quot;.&quot;ingredient_id&quot; = 8 LIMIT 21; args=(8,)
+&lt;QuerySet [&lt;Pizza: Chorizo&gt;]&gt;
+</code></pre><p>Pour genérer moins de requête on va utiliser <code>prefetch_related</code> et precharger toutes les pizzas pour chaques ingredients.
+Deux requêtes SQL sont générées et c&rsquo;est tous.</p>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-python" data-lang="python"><span style="color:#268bd2">ingredients</span> = <span style="color:#268bd2">Ingredient</span>.<span style="color:#268bd2">objects</span>.<span style="color:#268bd2">all</span>().<span style="color:#268bd2">prefetch_related</span>(<span style="color:#2aa198">&#39;pizza_set&#39;</span>)
+(<span style="color:#2aa198;font-weight:bold">0.001</span>) <span style="color:#268bd2">SELECT</span> <span style="color:#2aa198">&#34;tuto_ingredient&#34;</span>.<span style="color:#2aa198">&#34;id&#34;</span>, <span style="color:#2aa198">&#34;tuto_ingredient&#34;</span>.<span style="color:#2aa198">&#34;nom&#34;</span>, <span style="color:#2aa198">&#34;tuto_ingredient&#34;</span>.<span style="color:#2aa198">&#34;poids&#34;</span>, <span style="color:#2aa198">&#34;tuto_ingredient&#34;</span>.<span style="color:#2aa198">&#34;en_stock&#34;</span> <span style="color:#268bd2">FROM</span> <span style="color:#2aa198">&#34;tuto_ingredient&#34;</span>; <span style="color:#268bd2">args</span>=()
+(<span style="color:#2aa198;font-weight:bold">0.002</span>) <span style="color:#268bd2">SELECT</span> (<span style="color:#2aa198">&#34;tuto_pizza_ingredients&#34;</span>.<span style="color:#2aa198">&#34;ingredient_id&#34;</span>) <span style="color:#268bd2">AS</span> <span style="color:#2aa198">&#34;_prefetch_related_val_ingredient_id&#34;</span>, <span style="color:#2aa198">&#34;tuto_pizza&#34;</span>.<span style="color:#2aa198">&#34;id&#34;</span>, <span style="color:#2aa198">&#34;tuto_pizza&#34;</span>.<span style="color:#2aa198">&#34;nom&#34;</span> <span style="color:#268bd2">FROM</span> <span style="color:#2aa198">&#34;tuto_pizza&#34;</span> <span style="color:#268bd2">INNER</span> <span style="color:#268bd2">JOIN</span> <span style="color:#2aa198">&#34;tuto_pizza_ingredients&#34;</span> <span style="color:#268bd2">ON</span> (<span style="color:#2aa198">&#34;tuto_pizza&#34;</span>.<span style="color:#2aa198">&#34;id&#34;</span> = <span style="color:#2aa198">&#34;tuto_pizza_ingredients&#34;</span>.<span style="color:#2aa198">&#34;pizza_id&#34;</span>) <span style="color:#268bd2">WHERE</span> <span style="color:#2aa198">&#34;tuto_pizza_ingredients&#34;</span>.<span style="color:#2aa198">&#34;ingredient_id&#34;</span> <span style="color:#268bd2">IN</span> (<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#2aa198;font-weight:bold">3</span>, <span style="color:#2aa198;font-weight:bold">4</span>, <span style="color:#2aa198;font-weight:bold">5</span>, <span style="color:#2aa198;font-weight:bold">6</span>, <span style="color:#2aa198;font-weight:bold">7</span>, <span style="color:#2aa198;font-weight:bold">8</span>); <span style="color:#268bd2">args</span>=(<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#2aa198;font-weight:bold">3</span>, <span style="color:#2aa198;font-weight:bold">4</span>, <span style="color:#2aa198;font-weight:bold">5</span>, <span style="color:#2aa198;font-weight:bold">6</span>, <span style="color:#2aa198;font-weight:bold">7</span>, <span style="color:#2aa198;font-weight:bold">8</span>)
+<span style="color:#859900">for</span> <span style="color:#268bd2">ingredient</span> <span style="color:#859900">in</span> <span style="color:#268bd2">ingredients</span>:
+     <span style="color:#859900">print</span>(<span style="color:#268bd2">ingredient</span>.<span style="color:#268bd2">pizza_set</span>.<span style="color:#268bd2">all</span>())
+   
+&lt;<span style="color:#268bd2">QuerySet</span> [&lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Régina</span>&gt;, &lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Royale</span>&gt;]&gt;
+&lt;<span style="color:#268bd2">QuerySet</span> [&lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Régina</span>&gt;, &lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Royale</span>&gt;]&gt;
+&lt;<span style="color:#268bd2">QuerySet</span> [&lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Régina</span>&gt;, &lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Royale</span>&gt;]&gt;
+&lt;<span style="color:#268bd2">QuerySet</span> [&lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Régina</span>&gt;, &lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Royale</span>&gt;, &lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Chorizo</span>&gt;]&gt;
+&lt;<span style="color:#268bd2">QuerySet</span> [&lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Royale</span>&gt;]&gt;
+&lt;<span style="color:#268bd2">QuerySet</span> [&lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Royale</span>&gt;]&gt;
+&lt;<span style="color:#268bd2">QuerySet</span> [&lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Chorizo</span>&gt;]&gt;
+&lt;<span style="color:#268bd2">QuerySet</span> [&lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Chorizo</span>&gt;]&gt;
+
+</code></pre></div><p>Cependant, pouvoir filtrer les pizzas, peut être utile, pour cela on va utiliser l&rsquo;object <code>Prefetch</code>. (Il n&rsquo;y que la pizza chorizo qui est en promotion)</p>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-python" data-lang="python"><span style="color:#268bd2">ingredients</span> = <span style="color:#268bd2">Ingredient</span>.<span style="color:#268bd2">objects</span>.<span style="color:#268bd2">all</span>().<span style="color:#268bd2">prefetch_related</span>(<span style="color:#268bd2">Prefetch</span>(<span style="color:#2aa198">&#39;pizza_set&#39;</span>, <span style="color:#268bd2">queryset</span>=<span style="color:#268bd2">Pizza</span>.<span style="color:#268bd2">objects</span>.<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">promotion</span>=<span style="color:#268bd2">True</span>)))
+<span style="color:#859900">for</span> <span style="color:#268bd2">ingredient</span> <span style="color:#859900">in</span> <span style="color:#268bd2">ingredients</span>:
+     <span style="color:#859900">print</span>(<span style="color:#268bd2">ingredient</span>, <span style="color:#268bd2">ingredient</span>.<span style="color:#268bd2">pizza_set</span>.<span style="color:#268bd2">all</span>())
+
+<span style="color:#268bd2">mozzarella</span> &lt;<span style="color:#268bd2">QuerySet</span> []&gt;
+<span style="color:#268bd2">champignons</span> <span style="color:#268bd2">de</span> <span style="color:#268bd2">Paris</span> &lt;<span style="color:#268bd2">QuerySet</span> []&gt;
+<span style="color:#268bd2">jambon</span> &lt;<span style="color:#268bd2">QuerySet</span> []&gt;
+<span style="color:#268bd2">Coulis</span> <span style="color:#268bd2">de</span> <span style="color:#268bd2">tomate</span> &lt;<span style="color:#268bd2">QuerySet</span> [&lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Chorizo</span>&gt;]&gt;
+<span style="color:#268bd2">Oignons</span> &lt;<span style="color:#268bd2">QuerySet</span> []&gt;
+<span style="color:#268bd2">lardons</span> <span style="color:#268bd2">fumés</span> &lt;<span style="color:#268bd2">QuerySet</span> []&gt;
+<span style="color:#268bd2">poivrons</span> &lt;<span style="color:#268bd2">QuerySet</span> [&lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Chorizo</span>&gt;]&gt;
+<span style="color:#268bd2">chorizo</span> &lt;<span style="color:#268bd2">QuerySet</span> [&lt;<span style="color:#268bd2">Pizza</span>: <span style="color:#268bd2">Chorizo</span>&gt;]&gt;
+</code></pre></div><p>Bon imaginons que l&rsquo;on a besoin de faire une annotation et de compter le nombre de pizza en promo par ingredient :</p>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-python" data-lang="python"><span style="color:#268bd2">ingredients</span> = <span style="color:#268bd2">Ingredient</span>.<span style="color:#268bd2">objects</span>.<span style="color:#268bd2">all</span>().<span style="color:#268bd2">prefetch_related</span>(<span style="color:#268bd2">Prefetch</span>(<span style="color:#2aa198">&#39;pizza_set&#39;</span>, <span style="color:#268bd2">queryset</span>=<span style="color:#268bd2">Pizza</span>.<span style="color:#268bd2">objects</span>.<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">promotion</span>=<span style="color:#268bd2">True</span>))).<span style="color:#268bd2">annotate</span>(<span style="color:#268bd2">nb_promo</span>=<span style="color:#268bd2">Count</span>(<span style="color:#2aa198">&#39;pizza&#39;</span>))
+<span style="color:#859900">for</span> <span style="color:#268bd2">ingredient</span> <span style="color:#859900">in</span> <span style="color:#268bd2">ingredients</span>:
+     <span style="color:#859900">print</span>(<span style="color:#268bd2">f</span><span style="color:#2aa198">&#34;{ingredient}, {ingredient.pizza_set.all()}, {ingredient.nb_promo}&#34;</span>)
+</code></pre></div><blockquote>
+<p>Voici le résultat (ci-dessous) et la il y a un probléme, notre  <code>nb_promo</code> ne correspond pas au notre de pizza dans notre queryset</p>
+</blockquote>
+<pre><code>Coulis de tomate, &lt;QuerySet [&lt;Pizza: Chorizo&gt;]&gt;, 3
+lardons fumés, &lt;QuerySet []&gt;, 1
+champignons de Paris, &lt;QuerySet []&gt;, 2
+jambon, &lt;QuerySet []&gt;, 2
+Oignons, &lt;QuerySet []&gt;, 1
+poivrons, &lt;QuerySet [&lt;Pizza: Chorizo&gt;]&gt;, 1
+mozzarella, &lt;QuerySet []&gt;, 2
+chorizo, &lt;QuerySet [&lt;Pizza: Chorizo&gt;]&gt;, 1
+</code></pre>
+</div>
+
+        <footer class="post-footer clearfix">
+    
+
+    <div class="share">
+        
+            <a class="icon-twitter" href="https://twitter.com/share?text=WIP%20Django%20prefetch_related%20et%20Prefetch&url=https%3a%2f%2fhoutmann.github.io%2f2020%2f07%2f09%2fdjango-prefetch-related-et-prefetch%2f"
+                onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <i class="fa fa-twitter"></i>
+                <span class="hidden">Twitter</span>
+            </a>
+        
+
+        
+            <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fhoutmann.github.io%2f2020%2f07%2f09%2fdjango-prefetch-related-et-prefetch%2f"
+                onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <i class="fa fa-facebook"></i>
+                <span class="hidden">Facebook</span>
+            </a>
+        
+
+        
+            <a class="icon-google-plus" href="https://plus.google.com/share?url=https%3a%2f%2fhoutmann.github.io%2f2020%2f07%2f09%2fdjango-prefetch-related-et-prefetch%2f"
+              onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+              <i class="fa fa-google-plus"></i>
+                <span class="hidden">Google+</span>
+            </a>
+        
+        
+            <a class="icon-linkedin" href="https://www.linkedin.com/shareArticle?mini=true&title=WIP%20Django%20prefetch_related%20et%20Prefetch&url=https%3a%2f%2fhoutmann.github.io%2f2020%2f07%2f09%2fdjango-prefetch-related-et-prefetch%2f&summary="
+               onclick="window.open(this.href, 'linkedin-share', 'width=554,height=481');return false;">
+               <i class="fa fa-linkedin"></i>
+               <span class="hidden">LinkedIn</span>
+            </a>
+        
+    </div>
+</footer>
+
+        
+    <div class="comments">
+        <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-houtmann-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+
+    </article>
+</div>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="site-title-wrapper">
+                    <h1 class="site-title">
+                        <a title="Hadrien Houtmann" href="https://houtmann.github.io/">Hadrien Houtmann</a>
+                    </h1>
+                    <a class="button-square button-jump-top js-jump-top" href="#">
+                        <i class="fa fa-angle-up"></i>
+                    </a>
+                </div>
+
+                <p class="footer-copyright">
+                    <span>&copy; 2020 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                </p>
+                <p class="footer-copyright">
+                    <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
+                    <span>/ <a href="https://github.com/jbub/ghostwriter">Ported</a> to Hugo By <a href="https://github.com/jbub">jbub</a></span>
+                </p>
+            </div>
+        </footer>
+
+        <script src="https://houtmann.github.io/js/jquery-1.11.3.min.js"></script>
+        <script src="https://houtmann.github.io/js/jquery.fitvids.js"></script>
+        <script src="https://houtmann.github.io/js/scripts.js"></script>
+    </body>
+</html>
+
