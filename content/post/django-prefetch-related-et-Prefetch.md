@@ -28,6 +28,7 @@ class Ingredient(models.Model):
 class Pizza(models.Model):
     nom = models.CharField(max_length=50)
     ingredients = models.ManyToManyField(Ingredient)
+    promotion = models.BooleanField()
 
     def __str__(self):
         return self.nom

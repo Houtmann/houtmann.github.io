@@ -125,6 +125,7 @@ Pour illustrer cela, on va reprendre l&rsquo;exemple de la documentation :</p>
 <span style="color:#859900">class</span> <span style="color:#cb4b16">Pizza</span>(<span style="color:#268bd2">models</span>.<span style="color:#268bd2">Model</span>):
     <span style="color:#268bd2">nom</span> = <span style="color:#268bd2">models</span>.<span style="color:#268bd2">CharField</span>(<span style="color:#268bd2">max_length</span>=<span style="color:#2aa198;font-weight:bold">50</span>)
     <span style="color:#268bd2">ingredients</span> = <span style="color:#268bd2">models</span>.<span style="color:#268bd2">ManyToManyField</span>(<span style="color:#268bd2">Ingredient</span>)
+    <span style="color:#268bd2">promotion</span> = <span style="color:#268bd2">models</span>.<span style="color:#268bd2">BooleanField</span>()
 
     <span style="color:#859900">def</span> <span style="color:#268bd2">__str__</span>(<span style="color:#268bd2">self</span>):
         <span style="color:#859900">return</span> <span style="color:#268bd2">self</span>.<span style="color:#268bd2">nom</span>
