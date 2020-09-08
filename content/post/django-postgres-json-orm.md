@@ -1,5 +1,5 @@
 ---
-title: "WIP Django / PostGreSQL, l'ORM et le Json"
+title: "Django / PostGreSQL, l'ORM et le Json"
 date: 2020-08-02T10:45:33+02:00
 draft: false
 tags: ["tutoriel", "theme"] 

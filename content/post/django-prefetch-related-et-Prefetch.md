@@ -1,6 +1,6 @@
 ---
-title: "Django prefetch_related et Prefetch"
-date: 2020-09-09T10:45:33+02:00
+title: "WIP Django prefetch_related et Prefetch"
+date: 2020-07-09T10:45:33+02:00
 draft: false
 ---
 
@@ -102,8 +102,19 @@ chorizo <QuerySet [<Pizza: Chorizo>]>
 
 Bon imaginons que l'on a besoin de faire une annotation et de compter le nombre de pizza en promo par ingredient :
 
-````python
+```python
 ingredients = Ingredient.objects.all().prefetch_related(Prefetch('pizza_set', queryset=Pizza.objects.filter(promotion=True))).annotate(nb_promo=Count('pizza'))
 for ingredient in ingredients:
      print(f"{ingredient}, {ingredient.pizza_set.all()}, {ingredient.nb_promo}")
-````
+```
+> Voici le résultat (ci-dessous) et la il y a un probléme, notre  ``nb_promo`` ne correspond pas au notre de pizza dans notre queryset
+```
+Coulis de tomate, <QuerySet [<Pizza: Chorizo>]>, 3
+lardons fumés, <QuerySet []>, 1
+champignons de Paris, <QuerySet []>, 2
+jambon, <QuerySet []>, 2
+Oignons, <QuerySet []>, 1
+poivrons, <QuerySet [<Pizza: Chorizo>]>, 1
+mozzarella, <QuerySet []>, 2
+chorizo, <QuerySet [<Pizza: Chorizo>]>, 1
+```
