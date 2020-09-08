@@ -100,10 +100,14 @@ poivrons <QuerySet [<Pizza: Chorizo>]>
 chorizo <QuerySet [<Pizza: Chorizo>]>
 ````
 
+
 Bon imaginons que l'on a besoin de faire une annotation et de compter le nombre de pizza en promo par ingredient :
 
 ```python
 ingredients = Ingredient.objects.all().prefetch_related(Prefetch('pizza_set', queryset=Pizza.objects.filter(promotion=True))).annotate(nb_promo=Count('pizza'))
+(0.004) SELECT "tuto_ingredient"."id", "tuto_ingredient"."nom", "tuto_ingredient"."poids", "tuto_ingredient"."en_stock", COUNT("tuto_pizza_ingredients"."pizza_id") AS "nb_promo" FROM "tuto_ingredient" LEFT OUTER JOIN "tuto_pizza_ingredients" ON ("tuto_ingredient"."id" = "tuto_pizza_ingredients"."ingredient_id") GROUP BY "tuto_ingredient"."id"; args=()
+(0.002) SELECT ("tuto_pizza_ingredients"."ingredient_id") AS "_prefetch_related_val_ingredient_id", "tuto_pizza"."id", "tuto_pizza"."nom", "tuto_pizza"."promotion" FROM "tuto_pizza" INNER JOIN "tuto_pizza_ingredients" ON ("tuto_pizza"."id" = "tuto_pizza_ingredients"."pizza_id") WHERE ("tuto_pizza"."promotion" AND "tuto_pizza_ingredients"."ingredient_id" IN (4, 6, 2, 3, 5, 7, 1, 8)); args=(4, 6, 2, 3, 5, 7, 1, 8)
+
 for ingredient in ingredients:
      print(f"{ingredient}, {ingredient.pizza_set.all()}, {ingredient.nb_promo}")
 ```
@@ -118,3 +122,45 @@ poivrons, <QuerySet [<Pizza: Chorizo>]>, 1
 mozzarella, <QuerySet []>, 2
 chorizo, <QuerySet [<Pizza: Chorizo>]>, 1
 ```
+
+
+
+
+Essayons de comprendre ce qui se passe.
+prefetch_related, fait une jointure en python et non en SQL(comme expliqué dans la doc django), 
+cependant lorsque l'on écrit un `annotate` dans notre requête 
+cela va généré une jointure sql (voir ci-dessous), mais le filtre utilisé dans `Prefetch`, ne sera pas utilisé !!!
+```sql
+SELECT "tuto_ingredient"."id",
+       "tuto_ingredient"."nom",
+       "tuto_ingredient"."poids",
+       "tuto_ingredient"."en_stock",
+       COUNT("tuto_pizza_ingredients"."pizza_id") AS "nb_promo"
+FROM "tuto_ingredient"
+         LEFT OUTER JOIN "tuto_pizza_ingredients" ON ("tuto_ingredient"."id" = "tuto_pizza_ingredients"."ingredient_id")
+GROUP BY "tuto_ingredient"."id";
+```
+
+
+Pour générer la requête exact :
+```python
+ingredients = Ingredient.objects.all()\
+     .prefetch_related(Prefetch('pizza_set', queryset=Pizza.objects.filter(promotion=True)))\
+     .annotate(nb_promo=Count('pizza', filter=Q(pizza__promotion=True)))
+for ingredient in ingredients:
+     print(f"{ingredient}, {ingredient.pizza_set.all()}, {ingredient.nb_promo}")
+
+Coulis de tomate, <QuerySet [<Pizza: Chorizo>]>, 1
+lardons fumés, <QuerySet []>, 0
+champignons de Paris, <QuerySet []>, 0
+jambon, <QuerySet []>, 0
+Oignons, <QuerySet []>, 0
+poivrons, <QuerySet [<Pizza: Chorizo>]>, 1
+mozzarella, <QuerySet []>, 0
+chorizo, <QuerySet [<Pizza: Chorizo>]>, 1
+
+```
+# Conclusion
+
+L'utilisation de `prefetch_related` est très intéressante pour éviter un déluge de requêtes sur la base de données.
+Cependant, lorsque l'on pousse l'utilisation avec `Prefetch`, et une annotation ou aggrégation, il faudra faire attention
