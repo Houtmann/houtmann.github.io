@@ -1,6 +1,6 @@
 ---
 title: "WIP Django prefetch_related et Prefetch"
-date: 2020-07-09T10:45:33+02:00
+date: 2020-09-07T10:45:33+02:00
 draft: false
 ---
 
