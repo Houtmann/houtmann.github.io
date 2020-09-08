@@ -199,8 +199,8 @@ Oignons, &lt;QuerySet []&gt;, 1
 poivrons, &lt;QuerySet [&lt;Pizza: Chorizo&gt;]&gt;, 1
 mozzarella, &lt;QuerySet []&gt;, 2
 chorizo, &lt;QuerySet [&lt;Pizza: Chorizo&gt;]&gt;, 1
-</code></pre><p>Essayons de comprendre ce qui se passe.
-prefetch_related, fait une jointure en python et non en SQL(comme expliqué dans la doc django),
+</code></pre><p>Essayons de comprendre ce qui se passe.</p>
+<p><code>prefetch_related</code>, fait une jointure en python et non en SQL(comme expliqué dans la doc django),
 cependant lorsque l&rsquo;on écrit un <code>annotate</code> dans notre requête
 cela va généré une jointure sql (voir ci-dessous), mais le filtre utilisé dans <code>Prefetch</code>, ne sera pas utilisé !!!</p>
 <div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-sql" data-lang="sql"><span style="color:#859900">SELECT</span> <span style="color:#2aa198">&#34;tuto_ingredient&#34;</span>.<span style="color:#2aa198">&#34;id&#34;</span>,

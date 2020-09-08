@@ -127,7 +127,8 @@ chorizo, <QuerySet [<Pizza: Chorizo>]>, 1
 
 
 Essayons de comprendre ce qui se passe.
-prefetch_related, fait une jointure en python et non en SQL(comme expliqué dans la doc django), 
+
+`prefetch_related`, fait une jointure en python et non en SQL(comme expliqué dans la doc django), 
 cependant lorsque l'on écrit un `annotate` dans notre requête 
 cela va généré une jointure sql (voir ci-dessous), mais le filtre utilisé dans `Prefetch`, ne sera pas utilisé !!!
 ```sql
