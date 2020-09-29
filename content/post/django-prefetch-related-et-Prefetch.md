@@ -43,7 +43,9 @@ for ingredient in ingredients:
      print(ingredient.pizza_set.all()
 ````
 
-Voici les reqûetes SQL générées, ainsi que le print des pizzas. On peut voir que le code n'est pas optimisé
+Voici les reqûetes SQL générées, ainsi que le print des pizzas. On peut voir que le code n'est pas optimisé.
+A chaque itération, une requête est générée. Cela peut etre admissible dans notre exemple, mais dans un cas réel avec beaucoup plus de data,
+cela est problématique pour la base de donnée.
 ```
 (0.004) SELECT "tuto_pizza"."id", "tuto_pizza"."nom" FROM "tuto_pizza" INNER JOIN "tuto_pizza_ingredients" ON ("tuto_pizza"."id" = "tuto_pizza_ingredients"."pizza_id") WHERE "tuto_pizza_ingredients"."ingredient_id" = 1 LIMIT 21; args=(1,)
 <QuerySet [<Pizza: Régina>, <Pizza: Royale>]>
@@ -66,7 +68,8 @@ Voici les reqûetes SQL générées, ainsi que le print des pizzas. On peut voir
 
 
 Pour genérer moins de requête on va utiliser `prefetch_related` et precharger toutes les pizzas pour chaques ingredients.
-Deux requêtes SQL sont générées et c'est tous.
+Seulement deux requêtes SQL sont générées, lors de l'évaluation du `ìngredients``
+
 ```python
 ingredients = Ingredient.objects.all().prefetch_related('pizza_set')
 (0.001) SELECT "tuto_ingredient"."id", "tuto_ingredient"."nom", "tuto_ingredient"."poids", "tuto_ingredient"."en_stock" FROM "tuto_ingredient"; args=()
@@ -102,7 +105,7 @@ chorizo <QuerySet [<Pizza: Chorizo>]>
 ````
 
 
-Bon imaginons que l'on a besoin de faire une annotation et de compter le nombre de pizza en promo par ingredient :
+Bon !!! Imaginons que l'on a besoin de faire une annotation et de compter le nombre de pizza en promo par ingredient :
 
 ```python
 ingredients = Ingredient.objects.all().prefetch_related(Prefetch('pizza_set', queryset=Pizza.objects.filter(promotion=True))).annotate(nb_promo=Count('pizza'))
@@ -165,4 +168,4 @@ chorizo, <QuerySet [<Pizza: Chorizo>]>, 1
 # Conclusion
 
 L'utilisation de `prefetch_related` est très intéressante pour éviter un déluge de requêtes sur la base de données.
-Cependant, lorsque l'on pousse l'utilisation avec `Prefetch`, et une annotation ou aggrégation, il faudra faire attention
+Cependant, lorsque l'on pousse l'utilisation avec `Prefetch`, avec une annotation ou aggrégation, il faudra faire attention sur les filtres.
